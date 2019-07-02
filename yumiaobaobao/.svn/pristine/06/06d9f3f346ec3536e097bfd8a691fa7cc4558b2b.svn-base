@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.user.dao.nice_commentMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.nice_comment">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="userId" property="userid" jdbcType="VARCHAR"/>
+        <result column="commentContent" property="commentContent" jdbcType="VARCHAR"/>
+        <result column="noteId" property="noteId" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createtime" jdbcType="TIMESTAMP"/>
+        <result column="Image" jdbcType="VARCHAR" property="image"/>
+        <result column="avatarimg" jdbcType="VARCHAR" property="avatarimg"/>
+    </resultMap>
+
+    <!--评论列表-->
+    <select id="selectCommentList" resultType="com.yumiaobaobao.app.user.entity.nice_comment">
+        SELECT
+          a.*,
+           b.*,
+           c.Image
+        FROM
+            nice_comment a,
+          user_info b ,
+          index_discover c
+        WHERE 1=1
+        and  a.userId =b.userId
+        and  a.noteId =c.ID
+    </select>
+</mapper>

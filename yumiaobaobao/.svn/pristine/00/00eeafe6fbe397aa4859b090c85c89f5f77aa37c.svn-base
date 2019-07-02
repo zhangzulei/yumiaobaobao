@@ -1,0 +1,45 @@
+package com.yumiaobaobao.app.schoolcourse.service.impl;
+
+import com.yumiaobaobao.app.schoolcourse.dao.schoolcourseMapper;
+import com.yumiaobaobao.app.schoolcourse.entity.schoolcourse;
+import com.yumiaobaobao.app.schoolcourse.service.schoolcourseService;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * @author zzl
+ * @date
+ * @Description
+ */
+@Service
+public class schoolcourseServiceImpl implements schoolcourseService {
+    @Autowired
+    private schoolcourseMapper schoolcourse;
+   
+
+    @Override
+    public List<schoolcourse> allSchoolCourse(Integer id) {
+        return schoolcourse.allSchoolCourse(id);
+    }
+
+    @Override
+    public List<schoolcourse> commendCourse(Integer belongShopid) {
+        return schoolcourse.commendCourse(belongShopid);
+    }
+
+    @Override
+    public List<schoolscore> allDiscuss(Integer course_id){
+        return schoolcourse.allDiscuss(course_id);
+    }
+
+    @Override
+    public List<schoolcourse> recommendCourse(Integer classType){return schoolcourse.recommendCourse(classType);}
+
+    @Override
+    public List<com.yumiaobaobao.app.schoolcourse.entity.schoolcourse> randomSchoolCourse() {
+        return schoolcourse.randomSchoolCourse();
+    }
+}

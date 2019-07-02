@@ -1,0 +1,19 @@
+package com.yumiaobaobao.app.gardener.dao;
+
+import com.yumiaobaobao.app.gardener.entity.gardenerUserInfo;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface gardenerMapper {
+    /**
+     * 查询所有小圆丁
+     * @return
+     */
+    List<gardenerUserInfo> selectAll(
+            @Param("userid") String userid
+    );
+
+}

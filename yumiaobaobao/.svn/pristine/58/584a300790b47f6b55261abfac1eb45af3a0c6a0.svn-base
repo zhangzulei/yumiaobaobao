@@ -1,0 +1,24 @@
+package com.yumiaobaobao.app.shop.dao;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+@Repository
+public interface school_shop_scoreMapper {
+
+    //  新增店铺评分
+    @Insert("insert into school_shop_score(shopid,score_quality,score_surroundings,score_Popularity,comment,commentimg," +
+            "userid,createtime) values(#{map.shopid},#{map.score_quality},#{map.score_surroundings},#{map.score_Popularity}," +
+            "#{map.comment},#{map.commentimg},#{map.userid},#{map.createtime})")
+    int addShopScore(@Param("map") Map map);
+
+    //查询特定店铺的平均评分
+    @Select("select (score/counts) scores from (select sum(score_quality + score_surroundings + score_Popularity) score ,count(id) counts " +
+            "from school_shop_score where shopid = #{shopid}) a ")
+    List<String> selectAvgScore(@Param("shopid")String shopid);
+}

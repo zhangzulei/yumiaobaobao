@@ -1,0 +1,101 @@
+package com.yumiaobaobao.app.shop.entity;
+
+import java.util.Date;
+
+/**
+ * @author zzl
+ * @date
+ * @Description
+ */
+public class school_shop_score {
+
+    private Integer id;
+
+    private Integer shopid;
+
+    private Integer score_quality;
+
+    private Integer score_surroundings;
+
+    private Integer score_Popularity;
+
+    private String comment;
+
+    private String commentimg;
+
+    private Integer userid;
+
+    private Date createtime;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getShopid() {
+        return shopid;
+    }
+
+    public void setShopid(Integer shopid) {
+        this.shopid = shopid;
+    }
+
+    public Integer getScore_quality() {
+        return score_quality;
+    }
+
+    public void setScore_quality(Integer score_quality) {
+        this.score_quality = score_quality;
+    }
+
+    public Integer getScore_surroundings() {
+        return score_surroundings;
+    }
+
+    public void setScore_surroundings(Integer score_surroundings) {
+        this.score_surroundings = score_surroundings;
+    }
+
+    public Integer getScore_Popularity() {
+        return score_Popularity;
+    }
+
+    public void setScore_Popularity(Integer score_Popularity) {
+        this.score_Popularity = score_Popularity;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getCommentimg() {
+        return commentimg;
+    }
+
+    public void setCommentimg(String commentimg) {
+        this.commentimg = commentimg;
+    }
+
+    public Integer getUserid() {
+        return userid;
+    }
+
+    public void setUserid(Integer userid) {
+        this.userid = userid;
+    }
+
+    public Date getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
+}

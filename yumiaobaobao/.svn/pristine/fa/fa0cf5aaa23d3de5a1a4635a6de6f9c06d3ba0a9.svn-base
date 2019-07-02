@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.globaltype.dao.SchoolTypeMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.globaltype.entity.SchoolType">
+        <id column="id" property="id" jdbcType="INTEGER"/>
+        <result column="fatherid" property="fatherid" jdbcType="INTEGER"/>
+        <result column="schooltypename" property="schooltypename" jdbcType="VARCHAR"/>
+        <result column="typeId" property="typeid" jdbcType="INTEGER"/>
+    </resultMap>
+
+    <select id="allTypeName" resultType="com.yumiaobaobao.app.globaltype.entity.SchoolType">
+    select schooltypename from school_type
+  </select>
+
+
+
+    <!--行业类别展示类别-->
+    <select id="faterfindAll" resultType="com.yumiaobaobao.app.globaltype.entity.SchoolType">
+        SELECT * FROM school_type  where 1 = 1
+        <if test="fatherid != null">
+            AND fatherid = #{fatherid}
+        </if>
+    </select>
+
+
+
+</mapper>

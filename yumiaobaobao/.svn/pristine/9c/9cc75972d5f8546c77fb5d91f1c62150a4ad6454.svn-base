@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.yumiaobaobao.app.gardener.dao.CollectionMapper" >
+
+ <select id="selectByNoteid" parameterType="java.util.List" >
+ select MONTH(Collectiontime) as month,count(*) as count where year(Collectiontime) = #{year} and Noteid in
+ <foreach collection="list" item="Noteid" separator="," open="(" close=")">
+    #{Noteid}
+ </foreach>
+ </select>
+
+<select id="selectYearByNoteid" parameterType="java.util.List">
+ select YEAR(Collectiontime) as year,count(*) as count where Noteid in
+ <foreach collection="list" item="Noteid" separator="," open="(" close=")">
+  #{Noteid}
+ </foreach>
+</select>
+
+</mapper>

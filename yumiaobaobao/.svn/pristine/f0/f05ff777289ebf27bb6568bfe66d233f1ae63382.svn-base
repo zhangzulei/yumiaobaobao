@@ -1,0 +1,16 @@
+package com.yumiaobaobao.app.gardener.dao;
+
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.springframework.stereotype.Repository;
+
+import java.util.Map;
+
+@Repository
+public interface applygarderMapper {
+
+    //新增小园丁绑定信息
+    @Insert("insert into applygarder(userid,shopid,createtime,type,ps) values(#{map.userid},#{map.shopid},#{map.createtime}，" +
+            "#{map.type},#{map.ps})")
+    int addApplygarder(@Param("map") Map map);
+}

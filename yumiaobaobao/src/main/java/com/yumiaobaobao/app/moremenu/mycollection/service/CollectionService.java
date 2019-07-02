@@ -1,0 +1,34 @@
+package com.yumiaobaobao.app.moremenu.mycollection.service;
+
+import com.yumiaobaobao.app.moremenu.mycollection.entity.Collection;
+import com.yumiaobaobao.app.user.entity.v_note;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+public interface CollectionService {
+
+    /**
+     * 查询我的便签收藏
+     * @return
+     */
+    List<Collection> selectMyCollection(String userId);
+    List<v_note> selectMyCollection1(String noteuserId);
+
+    int addCollection(Map map);
+
+    //根据便签id集合查询收藏信息(月)
+    List<Map<String,Object>> selectByNoteid(List<String> list,String year);
+
+    //根据便签id集合查询收藏信息(年)
+    List<Map<String,Object>> selectYearByNoteid( List<String> list);
+
+    List<Collection> selectCollectionByUseridAndNoteid(String userid,String noteid);
+
+    List<Collection> selectCollectionByUserid(String userid);
+
+    List<Map<String,Object>> countsFromControllor(String Noteid,String year);
+}

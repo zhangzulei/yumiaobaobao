@@ -1,0 +1,51 @@
+package com.yumiaobaobao.app.globaltype.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.globaltype.entity.SchoolType;
+import com.yumiaobaobao.app.globaltype.service.SchoolTypeService;
+import com.yumiaobaobao.app.school_subject.entity.schoolsubject;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+/**
+ * Created by WH on 2019/04/17.
+ */
+
+
+@RestController
+@Component
+@Api(tags = "管理类别的接口 1.行业类别展示 2.根据父级id查询类别目录(课程用)")
+public class SchoolTypeController {
+
+
+    @Autowired
+    private SchoolTypeService schoolTypeService;
+
+
+    @ApiOperation(value = "行业类别展示) ",notes = "查询所有行业类别 Message:0=>没有数据")
+    @RequestMapping(value = "/selectSchoolType",method = RequestMethod.GET)
+    public String selectSchoolType(@ApiParam(value = "父级id") @RequestParam(value = "fatherid")String fatherid){
+        List<SchoolType> list = schoolTypeService.faterfindAll(fatherid);
+        if(list.size()>0){
+            return "{\"Message\": \"OK\", \"Data\":"+JSON.toJSONString(list)+"}";
+        }
+        return "{\"Message\": \"0\"}";
+    }
+
+    @ApiOperation(value = "根据父级id查询详细类别目录 ",notes = "根据父级id查询详细类别目录 Message:0=>没有数据")
+    @RequestMapping(value = "/findByFatherId",method = RequestMethod.GET)
+    public String findByFatherId(@ApiParam(value = "父级id") @RequestParam(value = "fatherid")String fatherid){
+        Integer integer = Integer.valueOf(fatherid);
+        List<schoolsubject> byFatherId = schoolTypeService.findByFatherId(integer);
+        if(byFatherId==null|| byFatherId.size()==0){
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"OK\", \"Data\":"+JSON.toJSONString(byFatherId)+"}";
+    }
+}

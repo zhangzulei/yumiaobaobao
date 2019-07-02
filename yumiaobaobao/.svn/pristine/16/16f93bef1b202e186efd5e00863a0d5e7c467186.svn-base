@@ -1,0 +1,73 @@
+package com.yumiaobaobao.app.schoolscore.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+import com.yumiaobaobao.app.schoolscore.service.schoolScoreService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/03/27.
+ */
+@RestController
+@Component
+@Api(tags = "课程评分操作：1.新增课程评分记录  2.根据课程id查询评论信息")
+public class scoreController {
+
+    @Autowired
+    private schoolScoreService schoolscoreService;
+
+    @RequestMapping(value = "addScore", method = RequestMethod.POST)
+    @ApiOperation(value = "提交课程评分", notes = "提交课程评分 Message 0 失败")
+    public String addScore(
+            @ApiParam("评价该商品的用户id") @RequestParam("userid") String userid,
+            @ApiParam("课程id") @RequestParam("courseid") String courseid,
+            @ApiParam("质量评分") @RequestParam("scorequality") String scorequality,
+            @ApiParam("环境评分") @RequestParam("scoresurroundings") String scoresurroundings,
+            @ApiParam("人气评分") @RequestParam("scorePopularity") String scorePopularity,
+            @ApiParam("课程所属商铺id") @RequestParam("school_id") String school_id,
+            @ApiParam("评论") @RequestParam(value = "comment", defaultValue = "null") String comment,
+            @ApiParam("评论图片") @RequestParam(value = "commentimg", defaultValue = "null") String commentimg
+    ) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userid", userid);
+        map.put("courseid", courseid);
+        map.put("scorequality", scorequality);
+        map.put("scoresurroundings", scoresurroundings);
+        map.put("scorePopularity", scorePopularity);
+        map.put("school_id", school_id);
+        if (comment != null) {
+            map.put("comment", comment);
+        }
+        if (commentimg != null) {
+            map.put("commentimg", commentimg);
+        }
+        int result = schoolscoreService.addScore(map);
+        if (result >0) {
+            return "{\"Message\": \"1\"}";
+        }
+        return "{\"Message\": \"0\"}";
+    }
+
+
+    @RequestMapping(value = "selectByCourseId", method = RequestMethod.GET)
+    @ApiOperation(value = "根据课程id查询评论", notes = "根据课程id查询评论 Message =>0 失败 =>1成功")
+    public String selectByCourseId(@ApiParam("课程id") @RequestParam("courseId") String courseId) {
+        List<schoolscore> schoolscores = schoolscoreService.selectByCourseId(Integer.valueOf(courseId));
+        if (schoolscores == null || schoolscores.size() <= 0) {
+            return "{\"Message\":\"0\"}";
+        }
+        return "{\"Message\":\"1\",\"Data\":" + JSON.toJSONString(schoolscores) + "}";
+    }
+}

@@ -1,0 +1,147 @@
+package com.yumiaobaobao.app.moremenu.myattention.Shop.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.yumiaobaobao.app.moremenu.myattention.Shop.entity.shopFollow;
+import com.yumiaobaobao.app.moremenu.myattention.Shop.service.ShopFollowService;
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import com.yumiaobaobao.app.shop.shophone.service.ShopHomeService;
+import com.yumiaobaobao.app.shop.shophone.service.school_shop_scoreService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/03/27.
+ */
+@RestController
+@Component
+@Api(tags = "我的关注-商户: 1.可能感兴趣的商户 2.我关注的商户 3.关注 4.取关 5.判断'我'是否关注该商户")
+public class ControllerShopFollow {
+    @Autowired
+    private ShopFollowService shopFollowService;
+    @Autowired
+    private com.yumiaobaobao.app.schoolscore.service.schoolScoreService schoolScoreService;
+    @Autowired
+    private ShopHomeService shopHomeService;
+    @Autowired
+    private school_shop_scoreService school_shop_scoreService;
+
+
+    @ApiOperation(value = "判断'我'是否关注该商户", notes = "判断'我'是否关注该商户（返回值供前端判断并显示相应的按钮)  Message 0=>不是 1=>是")
+    @RequestMapping(value = "/Judge", method = RequestMethod.GET)
+    public String Judge(@ApiParam("我的id") @RequestParam(value = "userId") String userId,
+                        @ApiParam("商户id") @RequestParam(value = "shopId") String shopId) {
+        List<Schoolshop> reslit = shopFollowService.Judge(userId, shopId);
+        if (reslit == null || reslit.size() == 0) {
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\"}";
+    }
+
+    @ApiOperation(value = "可能感兴趣的商户", notes = "可能感兴趣的商户  Message 0=>没有数据")
+    @RequestMapping(value = "/mayshop", method = RequestMethod.GET)
+    public String mayShop(@ApiParam("我的id") @RequestParam(value = "userID") int userID
+//            , @ApiParam("显示条数") @RequestParam(value = "number") int number
+    ) {
+        List<Schoolshop> resLit = shopFollowService.mayShop(userID, 10);
+        if (resLit == null || resLit.size() == 0) {
+            return "{\"Message\": \"0\"}";
+        }
+        List<Map<String, Object>> myShopList;
+        List li = new ArrayList();
+        myShopList = new ArrayList<Map<String, Object>>();
+
+        for (Schoolshop ss : resLit) {
+            //拿到该商户的平均评分
+            List<String> strings = school_shop_scoreService.selectAvgScore(String.valueOf(ss.getId()));
+            if(strings.get(0)==null||strings.get(0)==""){
+                ss.setAvgscore((ss.getAvgscore()+0)/2);
+            }else{
+                ss.setAvgscore((ss.getAvgscore()+Integer.valueOf(strings.get(0)))/2);
+            }
+            Map<String,Object> parm = new HashMap<String,Object>();
+//            shopmap.put("avgSocres", strings.get(0));
+//            parm.put("shop", ss);
+            li.add(ss);
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(li, SerializerFeature.DisableCircularReferenceDetect) + "}";
+
+    }
+
+    @ApiOperation(value = "我关注的商户(含数量)", notes = "我关注的商户(含数量) message 0=>没有数据 shopInfo=>商户信息 shopSize=>我关注的商户数量 ")
+    @RequestMapping(value = "/byUsreIdSelectShopInfo", method = RequestMethod.GET)
+    public String byUsreidSelectShopInfo(@ApiParam(value = "用户id") @RequestParam("userid") String userid) {
+        List<shopFollow> list = shopFollowService.byUsreidSelectShopInfo(userid);
+        if (list == null || list.size() == 0) {
+            return "{\"Message\": \"0\"}";
+        }
+       /* List<Map<String, Object>> myShopList;
+        List lists = new ArrayList();
+        myShopList = new ArrayList<Map<String, Object>>();
+
+        for (shopFollow a : list) {
+            Map<String,Object> parm = new HashMap<String,Object>();
+            List<String> strings = school_shop_scoreService.selectAvgScore(String.valueOf(a.getShopid()));
+            //           String avgScore = schoolScoreService.getAvgScore(String.valueOf(a.getShopid()));
+            String judge = Judge(userid, String.valueOf(a.getShopid()));
+            List<Schoolshop> schoolshops = shopHomeService.selectAllShopbyId(String.valueOf(a.getShopid()));
+            JSONObject jsonObject = JSONObject.parseObject(judge);
+            if(strings==null||strings.size()<=0||strings.get(0)==null){
+                schoolshops.get(0).setAvgscore((schoolshops.get(0).getAvgscore()+0)/2);
+            }else{
+                String s = strings.get(0);
+                BigDecimal bd=new BigDecimal(Double.parseDouble(s)).setScale(0, BigDecimal.ROUND_HALF_UP);//平均分四舍五入
+                schoolshops.get(0).setAvgscore(((schoolshops.get(0).getAvgscore())+new Double(bd))/2);
+            }
+//            parm.put("shop", schoolshops.get(0));
+            lists.add(schoolshops.get(0));
+        }*/
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(list,SerializerFeature.DisableCircularReferenceDetect) + "}";
+
+    }
+
+    @ApiOperation(value = "取消关注", notes = "取消关注  Message  0=>取关失败   1=>取关成功 -1=>没有关注无法取消 -2=>商户减少粉丝失败")
+    @RequestMapping(value = "/deleteShopFollow", method = RequestMethod.POST)
+    public String deleteShopFollow(@ApiParam(value = "用户id") @RequestParam("userid") String userid, @ApiParam(value = "店铺id") @RequestParam("shopid") String shopid) {
+        List<Schoolshop> list = shopFollowService.Judge(userid, shopid);//判断是否存在关注关系
+        if (null == list || list.size() == 0) {
+            return "{\"Message\": \"-1\"}";
+        }
+        if (shopFollowService.deleteShopFollow(userid, shopid) <= 0) {
+            return "{\"Message\": \"0\"}";
+        }
+        if (shopFollowService.lessfanNumber(shopid) <= 0) {
+            return "{\"Message\": \"-2\"}";
+        }
+        return "{\"Message\": \"1\"}";
+    }
+
+    @ApiOperation(value = "关注", notes = "关注  Message 0=>关注失败  1=>关注成功 -1=>已经关注无法再次关注  -2=>商户增加粉丝失败")
+    @RequestMapping(value = "/addShopFollow", method = RequestMethod.POST)
+    public String addShopFollow(@ApiParam(value = "用户id") @RequestParam("userid") String userid, @ApiParam(value = "店铺id") @RequestParam("shopid") String shopid) {
+        List<Schoolshop> list = shopFollowService.Judge(userid, shopid);//判断是否存在关注关系
+        if (null == list || list.size() == 0) {
+            if (shopFollowService.addShopFollow(userid, shopid) < 1) {
+                return "{\"Message\": \"0\"}";
+            }
+        } else {
+            return "{\"Message\": \"-1\"}";
+        }
+        if (shopFollowService.addfanNumber(shopid) <= 0) {
+            return "{\"Message\": \"-2\"}";
+        }
+        return "{\"Message\": \"1\"}";
+    }
+}

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.user.dao.nice_commentMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.nice_comment">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="userId" property="userid" jdbcType="VARCHAR"/>
+        <result column="commentContent" property="commentContent" jdbcType="VARCHAR"/>
+        <result column="noteId" property="noteId" jdbcType="VARCHAR"/>
+        <result column="createTime" property="createtime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--&lt;!&ndash;新增评论&ndash;&gt;-->
+    <!--<insert id="insertSelective" parameterType="com.yumiaobaobao.app.user.entity.nice_comment">-->
+        <!--insert into nice_comment-->
+        <!--<trim prefix="(" suffix=")" suffixOverrides=",">-->
+            <!--<if test="id != null">-->
+                <!--ID,-->
+            <!--</if>-->
+            <!--<if test="userId != null">-->
+                <!--userId,-->
+            <!--</if>-->
+            <!--<if test="commentContent != null">-->
+                <!--commentContent,-->
+            <!--</if>-->
+            <!--<if test="noteId != null">-->
+                <!--noteId,-->
+            <!--</if>-->
+            <!--<if test="createTime != null">-->
+                <!--createTime,-->
+            <!--</if>-->
+        <!--</trim>-->
+        <!--<trim prefix="values (" suffix=")" suffixOverrides=",">-->
+            <!--<if test="id != null">-->
+                <!--#{id,jdbcType=INTEGER},-->
+            <!--</if>-->
+            <!--<if test="userid != null">-->
+                <!--#{userid,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="commentContent != null">-->
+                <!--#{commentContent,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="noteId != null">-->
+                <!--#{noteId,jdbcType=VARCHAR},-->
+            <!--</if>-->
+            <!--<if test="createtime != null">-->
+                <!--#{createtime,jdbcType=TIMESTAMP},-->
+            <!--</if>-->
+        <!--</trim>-->
+    <!--</insert>-->
+</mapper>

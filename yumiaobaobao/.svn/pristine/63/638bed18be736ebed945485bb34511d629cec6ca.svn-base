@@ -1,0 +1,290 @@
+package com.yumiaobaobao.app.user.entity;
+
+import com.alibaba.fastjson.annotation.JSONField;
+import com.fasterxml.jackson.annotation.JsonFormat;
+import com.yumiaobaobao.app.globaltype.entity.SchoolType;
+import com.yumiaobaobao.app.moremenu.myattention.personal.entity.UserFollow;
+import org.springframework.format.annotation.DateTimeFormat;
+
+import java.io.Serializable;
+import java.util.Date;
+
+
+public class index_discover implements Serializable {
+
+    private Integer noteid;
+//    private String templateid;
+    private String images;
+    private String image;
+    private String imaget;
+    private String imagef;
+    private Long favocount;
+    private String remindPerson;
+    private String content;
+    private String userid;
+    @JSONField(format = "yyyy-MM-dd HH:mm:ss")  //FastJson包使用注解
+    @JsonFormat(pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8") //Jackson包使用注解
+    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")   //格式化前台日期参数注解
+    private Date createtime;
+    private String currentLocation;
+    private UserInfo userinfo;
+    private user_comment user_comment;
+    private Integer favostatus;
+    private SchoolType school_type;
+    private UserFollow user_follower;
+    private user_favo user_favo;
+    private Double latitude;
+    private Double longitude;
+    private Double distance;//距离
+
+    private String username;
+    private String avatarimg;
+
+    private String tags;
+    private String atUser;
+    private Long commentcount;
+    private Long collectcount;
+    private Integer talkingid;
+    private Integer isshow;
+    private String talkingName;
+
+    public String getTalkingName() {
+        return talkingName;
+    }
+
+    public void setTalkingName(String talkingName) {
+        this.talkingName = talkingName;
+    }
+
+    public Integer getIsshow() {
+        return isshow;
+    }
+
+    public void setIsshow(Integer isshow) {
+        this.isshow = isshow;
+    }
+
+    public Integer getTalkingid() {
+        return talkingid;
+    }
+
+    public void setTalkingid(Integer talkingid) {
+        this.talkingid = talkingid;
+    }
+
+    public Integer getNoteid() {
+        return noteid;
+    }
+
+    public void setNoteid(Integer noteid) {
+        this.noteid = noteid;
+    }
+
+    //    public String getTemplateid() {
+//        return templateid;
+//    }
+//
+//    public void setTemplateid(String templateid) {
+//        this.templateid = templateid;
+//    }
+
+    public String getImages() {
+        return images;
+    }
+
+    public void setImages(String images) {
+        this.images = images;
+    }
+
+    public Long getFavocount() {
+        return favocount;
+    }
+
+    public void setFavocount(Long favocount) {
+        this.favocount = favocount;
+    }
+
+    public String getContent() {
+        return content;
+    }
+
+    public void setContent(String content) {
+        this.content = content;
+    }
+
+    public String getUserid() {
+        return userid;
+    }
+
+    public void setUserid(String userid) {
+        this.userid = userid;
+    }
+
+    public Date getCreatetime() {
+        return createtime;
+    }
+
+    public void setCreatetime(Date createtime) {
+        this.createtime = createtime;
+    }
+
+    public String getCurrentLocation() {
+        return currentLocation;
+    }
+
+    public void setCurrentLocation(String currentLocation) {
+        this.currentLocation = currentLocation;
+    }
+
+    public UserInfo getUserinfo() {
+        return userinfo;
+    }
+
+    public void setUserinfo(UserInfo userinfo) {
+        this.userinfo = userinfo;
+    }
+
+    public com.yumiaobaobao.app.user.entity.user_comment getUser_comment() {
+        return user_comment;
+    }
+
+    public void setUser_comment(com.yumiaobaobao.app.user.entity.user_comment user_comment) {
+        this.user_comment = user_comment;
+    }
+
+    public Integer getFavostatus() {
+        return favostatus;
+    }
+
+    public void setFavostatus(Integer favostatus) {
+        this.favostatus = favostatus;
+    }
+
+    public SchoolType getSchool_type() {
+        return school_type;
+    }
+
+    public void setSchool_type(SchoolType school_type) {
+        this.school_type = school_type;
+    }
+
+    public UserFollow getUser_follower() {
+        return user_follower;
+    }
+
+    public void setUser_follower(UserFollow user_follower) {
+        this.user_follower = user_follower;
+    }
+
+    public com.yumiaobaobao.app.user.entity.user_favo getUser_favo() {
+        return user_favo;
+    }
+
+    public void setUser_favo(com.yumiaobaobao.app.user.entity.user_favo user_favo) {
+        this.user_favo = user_favo;
+    }
+
+    public Double getLatitude() {
+        return latitude;
+    }
+
+    public void setLatitude(Double latitude) {
+        this.latitude = latitude;
+    }
+
+    public Double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(Double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Double getDistance() {
+        return distance;
+    }
+
+    public void setDistance(Double distance) {
+        this.distance = distance;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getAvatarimg() {
+        return avatarimg;
+    }
+
+    public void setAvatarimg(String avatarimg) {
+        this.avatarimg = avatarimg;
+    }
+
+    public String getTags() {
+        return tags;
+    }
+
+    public void setTags(String tags) {
+        this.tags = tags;
+    }
+
+    public String getAtUser() {
+        return atUser;
+    }
+
+    public void setAtUser(String atUser) {
+        this.atUser = atUser;
+    }
+
+    public Long getCommentcount() {
+        return commentcount;
+    }
+
+    public void setCommentcount(Long commentcount) {
+        this.commentcount = commentcount;
+    }
+
+    public Long getCollectcount() {
+        return collectcount;
+    }
+
+    public void setCollectcount(Long collectcount) {
+        this.collectcount = collectcount;
+    }
+
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getImaget() {
+        return imaget;
+    }
+
+    public void setImaget(String imaget) {
+        this.imaget = imaget;
+    }
+
+    public String getImagef() {
+        return imagef;
+    }
+
+    public void setImagef(String imagef) {
+        this.imagef = imagef;
+    }
+
+    public String getRemindPerson() {
+        return remindPerson;
+    }
+
+    public void setRemindPerson(String remindPerson) {
+        this.remindPerson = remindPerson;
+    }
+}

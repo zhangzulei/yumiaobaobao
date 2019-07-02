@@ -1,0 +1,28 @@
+package com.yumiaobaobao.app.shop.dao;
+
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+/**
+ * Created by Administrator on 2019.05.28.
+ */
+@Repository
+public interface SchoolshopMapper {
+
+    /**
+     * 课程店铺高级筛选
+     * @param schoolshop
+     * @return
+     */
+    List<Schoolshop> selectAllShop(Schoolshop schoolshop);
+
+    /**
+     * 根据课程类型查询店铺
+     * @param schoolshop
+     * @return
+     */
+    List<Schoolshop> selectClassType(Schoolshop schoolshop);
+
+}

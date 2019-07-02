@@ -1,0 +1,153 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumiaobaobao.app.user.dao.index_discoverMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.index_discover">
+        <id column="ID" jdbcType="INTEGER" property="noteid"/>
+<!--        <result column="templateID" jdbcType="VARCHAR" property="templateid"/>-->
+        <result column="Images" jdbcType="VARCHAR" property="images"/>
+        <result column="Image" jdbcType="VARCHAR" property="image"/>
+        <result column="Imaget" jdbcType="VARCHAR" property="imaget"/>
+        <result column="Imagef" jdbcType="VARCHAR" property="imagef"/>
+        <result column="favoCount" jdbcType="BIGINT" property="favocount"/>
+        <result column="Content" jdbcType="VARCHAR" property="content"/>
+        <result column="userID" jdbcType="VARCHAR" property="userid"/>
+        <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime"/>
+        <result column="CommentID" jdbcType="INTEGER" property="commentid"/>
+        <result column="Latitude" jdbcType="INTEGER" property="latitude"/>
+        <result column="Longitude" jdbcType="INTEGER" property="longitude"/>
+        <result column="currentLocation" jdbcType="VARCHAR" property="currentLocation"/>
+        <result column="userName" jdbcType="VARCHAR" property="username"/>
+        <result column="avatarImg" jdbcType="VARCHAR" property="avatarimg"/>
+        <result column="atUser" jdbcType="VARCHAR" property="atUser"/>
+        <result column="commentCount" jdbcType="VARCHAR" property="commentcount"/>
+        <result column="collectCount" jdbcType="VARCHAR" property="collectcount"/>
+        <result column="favoStatus" jdbcType="INTEGER" property="favostatus"/>
+        <result column="tags" jdbcType="VARCHAR" property="tags"/>
+        <result column="remindPerson" jdbcType="VARCHAR" property="remindPerson"/>
+        <result column="talkingid" jdbcType="VARCHAR" property="talkingid"/>
+        <result column="isshow" jdbcType="INTEGER" property="isshow"/>
+        <association javaType="com.yumiaobaobao.app.user.entity.UserInfo" property="userinfo">
+            <id column="userId" jdbcType="VARCHAR" property="userid"/>
+            <result column="userName" jdbcType="VARCHAR" property="username"/>
+            <result column="avatarImg" jdbcType="VARCHAR" property="avatarimg"/>
+        </association>
+  <!--       <association javaType="com.yumiaobaobao.app.globaltype.entity.SchoolType" property="SchoolType">
+            <id column="ID" jdbcType="INTEGER" property="id"/>
+            <result column="schooltypename" jdbcType="VARCHAR" property="schooltypename"/>
+        </association>
+        <association javaType="com.yumiaobaobao.app.moremenu.myattention.personal.entity.UserFollow"
+                     property="UserFollow">
+            <id column="ID" jdbcType="INTEGER" property="id"/>
+            <result column="followuser_id" jdbcType="VARCHAR" property="followuserId"/>
+        </association>
+        <association javaType="com.yumiaobaobao.app.user.entity.user_favo" property="user_favo">
+            <id column="ID" jdbcType="INTEGER" property="id"/>
+            <result column="fatherId" jdbcType="VARCHAR" property="fatherid"/>
+            <result column="typeId" jdbcType="VARCHAR" property="typeid"/>
+        </association>-->
+    </resultMap>
+    <!--用户关注的人的动态展示-->
+    <select id="followerIndex" parameterType="java.lang.String" resultMap="BaseResultMap">
+    select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,
+    i.Content,u.yumiaoAccount
+    from index_discover i
+    inner join user_info u
+    on i.userID=u.userId
+    inner join (SELECT f.followuser_id,f.user_id,s.yumiaoAccount from user_follow f inner join user_info s
+    on f.user_id=s.userId where yumiaoAccount=#{nainiuaccoent}) p
+    on
+    i.userId=p.followuser_id
+    </select>
+    <!--根据用户喜欢的话题标签进行首页发现页面的信息展示-->
+    <select id="alltemplate" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,
+        i.Content,u.yumiaoAccount,i.userId,i.Latitude,i.Longitude,i.commentCount,i.collectCount,i.talkingid,f.schooltypename from index_discover i inner join user_info u
+        on i.userID =u.userId
+        inner join (select s.fatherid,s.schooltypename,u.userId from school_type s inner join
+        user_favo u on
+        u.typeId=s.typeId
+        and
+        u.fatherId=s.fatherid) f
+        on i.schooltypename=f.schooltypename
+        where yumiaoAccount=#{nainiuaccoent} order by i.CreateTime desc
+    </select>
+    <!--单击喜欢图标数量的加减更新-->
+    <update id="changeFavo" parameterType="com.yumiaobaobao.app.user.entity.index_discover">
+        update index_discover set favocount=#{favocount} where ID = #{noteid}
+    </update>
+    <!--<select id="searchContent" parameterType="java.lang.String" resultType="com.home.attention.entity.index_discover">-->
+    <!--select Content ,userID from index_discover where content like '%'#{content}'%'-->
+    <!--</select>-->
+    <!--没有话题标签首页发现展示-->
+    <select id="notagsAll" resultMap="BaseResultMap">
+        select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,
+        i.Content,u.userName,i.userID from index_discover i inner join user_info u
+        on i.userID =u.userId order by rand() and i.CreateTime desc
+    </select>
+
+    <!--附近功能-->
+    <select id="AllLocation"
+            resultType="com.yumiaobaobao.app.user.entity.index_discover">
+      select i.*,u.*,(
+      6371 * acos (
+      cos ( radians(#{Latitude}) )
+      * cos( radians(Latitude) )
+      * cos( radians( Longitude ) - radians(#{Longitude}) )
+      + sin ( radians(#{Latitude}) )
+      * sin( radians(Latitude) )
+    )
+    ) AS distance
+    FROM index_discover i
+    left join user_info u on i.userID=u.userId where i.isshow = 0
+    ORDER BY distance asc
+        <if test="pagenum > 0 and pagesize >0">
+            limit #{pagenum},#{pagesize}
+        </if>
+  </select>
+    <!--首页单击动态模板详情,根据的动态ID来获取详情-->
+    <select id="oneTemplate" parameterType="java.lang.String" resultMap="BaseResultMap">
+       select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,
+        i.Content,u.yumiaoAccount,i.userID,i.Latitude,i.Longitude,i.commentCount,i.collectCount,i.talkingid,u.userName,u.avatarImg from index_discover i inner join
+        user_info u
+        on i.userID =u.userId
+				where i.ID=#{templateid}
+    </select>
+    <!--模糊查询,根据用户搜索内容进行判断-->
+    <select id="fuzzyQuery" parameterType="java.lang.String" resultMap="BaseResultMap">
+        select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,
+        i.Content,u.yumiaoAccount,i.Latitude,i.Longitude,i.commentCount,i.collectCount,i.talkingid,u.userName,u.avatarImg from index_discover i
+        inner join user_info u on i.userID =u.userId where i.Content like  concat('%',#{content,jdbcType=VARCHAR},'%')
+    </select>
+    <!--根据用户的芋苗宝宝账号进行查询个人的发布的信息详情-->
+    <select id="queryOneByNainiuAccoent" parameterType="com.yumiaobaobao.app.user.entity.index_discover"
+            resultMap="BaseResultMap">
+        select i.ID,i.favoCount,i.userID,i.CreateTime,i.currentLocation,
+        i.Content,u.userName from index_discover i inner join user_info u
+        on i.userID =u.userId
+    </select>
+
+
+    <select id="selectAll" parameterType="int" resultMap="BaseResultMap">
+    select ID ,Image,Images,Imagef,Imaget,favoCount,Content,userID,CreateTime,CommentID,
+            currentLocation,remindPerson,favoStatus,schooltypename,Latitude,Longitude,commentCount,
+            collectCount,talkingid from index_discover order by CreateTime desc
+                <if test=" pagesize > 0 and pagenum >= 0">
+                    limit #{pagenum},#{pagesize}
+                </if>
+    </select>
+
+    <select id="selectByUserid" resultMap="BaseResultMap">
+        select i.*,u.* from index_discover i left join user_info u
+        on i.userID = u.userId where i.userID = #{userid}
+    </select>
+
+    <!--首页单击动态模板详情,根据的动态ID来获取详情-->
+    <select id="randomIndexDiscover"  resultMap="BaseResultMap">
+       select i.ID,i.Image,i.Images,i.Imaget,i.Imagef,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,
+        i.Content,u.yumiaoAccount,i.userID,i.Latitude,i.Longitude,i.commentCount,i.collectCount,i.talkingid,u.userName,u.avatarImg from index_discover i inner join
+        user_info u
+        on i.userID =u.userId
+		order by rand() limit 3
+    </select>
+
+</mapper>

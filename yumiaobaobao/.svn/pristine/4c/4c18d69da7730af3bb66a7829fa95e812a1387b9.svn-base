@@ -1,0 +1,217 @@
+package com.yumiaobaobao.app.shop.entity;
+
+import java.time.LocalTime;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+public class Schoolshop {
+
+    private String schoolname;
+    private String description;
+    private LocalTime schoolOpentime;
+    private LocalTime sendtime;
+    private String schooladdress;
+    private String schoolphone;
+    private String schoolcoll;
+    private String schoolserviceid;
+    private String otherid;
+    private String schoolshopImg;
+    private int id;
+    private int avgscore;
+    private int qualityscore;
+    private int surroundingsscore;
+    private int Popularityscore;
+    private int percapita;
+    private int schooltype;
+    private int couresNumber;
+    private int isparking;
+    private int fenNumber;
+    private int iswifi;
+    private int isactivity;
+    private int distance;
+
+    public String getSchoolname() {
+        return schoolname;
+    }
+
+    public void setSchoolname(String schoolname) {
+        this.schoolname = schoolname;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public LocalTime getSchoolOpentime() {
+        return schoolOpentime;
+    }
+
+    public void setSchoolOpentime(LocalTime schoolOpentime) {
+        this.schoolOpentime = schoolOpentime;
+    }
+
+    public LocalTime getSendtime() {
+        return sendtime;
+    }
+
+    public void setSendtime(LocalTime sendtime) {
+        this.sendtime = sendtime;
+    }
+
+    public String getSchooladdress() {
+        return schooladdress;
+    }
+
+    public void setSchooladdress(String schooladdress) {
+        this.schooladdress = schooladdress;
+    }
+
+    public String getSchoolphone() {
+        return schoolphone;
+    }
+
+    public void setSchoolphone(String schoolphone) {
+        this.schoolphone = schoolphone;
+    }
+
+    public String getSchoolcoll() {
+        return schoolcoll;
+    }
+
+    public void setSchoolcoll(String schoolcoll) {
+        this.schoolcoll = schoolcoll;
+    }
+
+    public String getSchoolserviceid() {
+        return schoolserviceid;
+    }
+
+    public void setSchoolserviceid(String schoolserviceid) {
+        this.schoolserviceid = schoolserviceid;
+    }
+
+    public String getOtherid() {
+        return otherid;
+    }
+
+    public void setOtherid(String otherid) {
+        this.otherid = otherid;
+    }
+
+    public String getSchoolshopImg() {
+        return schoolshopImg;
+    }
+
+    public void setSchoolshopImg(String schoolshopImg) {
+        this.schoolshopImg = schoolshopImg;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
+
+    public int getAvgscore() {
+        return avgscore;
+    }
+
+    public void setAvgscore(int avgscore) {
+        this.avgscore = avgscore;
+    }
+
+    public int getQualityscore() {
+        return qualityscore;
+    }
+
+    public void setQualityscore(int qualityscore) {
+        this.qualityscore = qualityscore;
+    }
+
+    public int getSurroundingsscore() {
+        return surroundingsscore;
+    }
+
+    public void setSurroundingsscore(int surroundingsscore) {
+        this.surroundingsscore = surroundingsscore;
+    }
+
+    public int getPopularityscore() {
+        return Popularityscore;
+    }
+
+    public void setPopularityscore(int popularityscore) {
+        Popularityscore = popularityscore;
+    }
+
+    public int getPercapita() {
+        return percapita;
+    }
+
+    public void setPercapita(int percapita) {
+        this.percapita = percapita;
+    }
+
+    public int getSchooltype() {
+        return schooltype;
+    }
+
+    public void setSchooltype(int schooltype) {
+        this.schooltype = schooltype;
+    }
+
+    public int getCouresNumber() {
+        return couresNumber;
+    }
+
+    public void setCouresNumber(int couresNumber) {
+        this.couresNumber = couresNumber;
+    }
+
+    public int getIsparking() {
+        return isparking;
+    }
+
+    public void setIsparking(int isparking) {
+        this.isparking = isparking;
+    }
+
+    public int getFenNumber() {
+        return fenNumber;
+    }
+
+    public void setFenNumber(int fenNumber) {
+        this.fenNumber = fenNumber;
+    }
+
+    public int getIswifi() {
+        return iswifi;
+    }
+
+    public void setIswifi(int iswifi) {
+        this.iswifi = iswifi;
+    }
+
+    public int getIsactivity() {
+        return isactivity;
+    }
+
+    public void setIsactivity(int isactivity) {
+        this.isactivity = isactivity;
+    }
+
+    public int getDistance() {
+        return distance;
+    }
+
+    public void setDistance(int distance) {
+        this.distance = distance;
+    }
+}

@@ -1,0 +1,57 @@
+package com.yumiaobaobao.app.user.like.service.impl;
+
+import com.yumiaobaobao.app.user.dao.nice_commentMapper;
+import com.yumiaobaobao.app.user.entity.nice_comment;
+import com.yumiaobaobao.app.user.like.service.Nice_CommentService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class Nice_CommentServiceImpl implements Nice_CommentService {
+
+    @Autowired
+    private nice_commentMapper niceCommentMapper;
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public nice_comment findNiceComment(Map<String, Object> map) {
+        return niceCommentMapper.findNiceComment(map);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,rollbackFor = Exception.class)
+    public Integer deleteNiceComment(Integer id) {
+        return niceCommentMapper.deleteNiceComment(id);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,rollbackFor = Exception.class)
+    public Integer addNiceComment(Map<String, Object> map) {
+        return Integer.valueOf(niceCommentMapper.addNiceComment(map));
+    }
+
+    @Override
+    public List<nice_comment> selectByNoteid(Integer noteId) {
+        return niceCommentMapper.selectByNoteid(noteId);
+    }
+
+    @Override
+    public int selectAllComment(Integer noteId) {
+        return niceCommentMapper.selectAllComment(noteId);
+    }
+
+    /**
+     * 新增评论
+     * @param map
+     * @return
+     */
+    @Override
+    public int insertSelective(Map<String, Object> map) {
+        return niceCommentMapper.insertSelective(map);
+    }
+}

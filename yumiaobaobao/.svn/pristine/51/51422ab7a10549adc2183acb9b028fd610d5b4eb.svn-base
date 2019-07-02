@@ -1,0 +1,143 @@
+package com.yumiaobaobao.app.proof.userproof.controller;
+
+import com.yumiaobaobao.app.common.dto.AliyunOssParameter;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.AliyunOSSUpLoadUtil;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.LocalDelete;
+import com.yumiaobaobao.app.common.utils.util.IDCardUtils;
+import com.yumiaobaobao.app.proof.userproof.entity.PaperWork;
+import com.yumiaobaobao.app.proof.userproof.service.UserProofService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.Map;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Created by WH on 2019/04/11.
+ */
+@RestController
+@Component
+@Api(tags = "用户身份认证  1.甄选当前用户是否已经审核   2.用户个人认证 3.注销认证   ")
+public class UserProofController {
+
+    @Autowired
+    private UserProofService userProofService;
+
+    private Map<String,Object> map;
+
+    @ApiOperation(value = "注销认证" ,notes = "注销认证 Message 0 该用户输入的身份证号与认证的不一致 -1注销失败 1成功")
+    @RequestMapping(value = "/deldeteReview",method = RequestMethod.GET)
+    public String deldeteReview(
+            @ApiParam("用户Id") @RequestParam("userId") String userId,
+            @ApiParam("用户身份证号") @RequestParam(value = "number")String number){
+        if(null != userProofService.selectbyUserIdAuthen(userId,number)){
+            return "{\"Message\":\"0\"}";
+        }
+        if(userProofService.deleteUserIdAuthen(userId,number)<=0){
+            return "{\"Message\":\"-1\"}";
+        }
+        return "{\"Message\":\"1\"}";
+    }
+
+    @ApiOperation(value = "甄选当前用户是否已经提交审核  ", notes = "甄选当前用户是否已经提交审核" +
+            " Message -2=>该用户没有提交过认证申请 0=>个人认证正在审核中 1=>审核成功 -1=>审核失败  2=>未提交审核可以跳转认证界面 ")
+    @RequestMapping(value = "/selectDocument",method = RequestMethod.GET)
+    public String selectDocument(@ApiParam("用户ID") @RequestParam("userId") String userId){
+        PaperWork result = userProofService.selectDocument(userId);
+        if(result==null){
+            return "{\"Message\":\"-2\"}";
+        }
+        switch (result.getIsSuccess()){
+            case -1:
+                userProofService.deldeteFailure(userId);
+                return "{\"Message\":\"-1\"}";
+            case 1:
+                return "{\"Message\":\"1\"}";
+            case 0:
+                return "{\"Message\":\"0\"}";
+
+        }
+        return "{\"Message\":\"2\"}";
+    }
+
+
+    @ApiOperation(value = "用户个人认证提交",
+            notes = "用户个人认证提交 居民身份证 外国护照 港澳居民来往内地内地通行证 台湾居民往来大陆通行证 ）" +
+                    " Message 0=>照片上传失败 -1=>提交失败 1.提交成功 2=>该身份证已被使用如有冲突请联系客服 -2系统异常未知错误  -3=>身份证号码不合法  3已知错误")
+    @RequestMapping(value = "/addUserProof",method = RequestMethod.POST)
+    public String addUserProof(
+            @ApiParam("用户ID") @RequestParam("userId") String userId,
+            @ApiParam("证件类型 1身份证 2护照 3港澳 4台湾  ") @RequestParam(value = "paperworktype",defaultValue = "1") String paperworktype,
+            @ApiParam("证件名") @RequestParam("paperworkName") String paperworkName,
+            @ApiParam("证件号码") @RequestParam("paperworkNumber") String paperworkNumber,
+            @ApiParam("用户自拍照") @RequestParam(value = "paperworkPhotoSelfie") MultipartFile paperworkPhotoSelfie,
+            @ApiParam("证件正面照") @RequestParam(value = "paperworkPhotofacade") MultipartFile paperworkPhotofacade,
+            @ApiParam("证件反面照") @RequestParam(value = "paperworkPhotoobverse") MultipartFile paperworkPhotoobverse
+    ) {
+
+        PaperWork poper = userProofService.selectPaperWork(userId);
+        if(poper!=null){
+            return "{\"Message\":\"3\"}";
+        }
+
+        if("1".equals(paperworktype)){
+            if(!"1".equals(IDCardUtils.IDCardValidate(paperworkNumber))){//判断该身份证号格式是否合法
+                return "{\"Message\":\"-3\"}";
+            }
+            if(userProofService.selectAuthen(paperworkNumber)!=null){//判断该身份证号是否被实名过
+                return "{\"Message\":\"2\"}";
+            }
+        }
+
+        MultipartFile[] multipartFiles = {paperworkPhotoSelfie, paperworkPhotofacade, paperworkPhotoobverse};
+        String [] multipartFileToString = {"paperworkPhotoSelfie","paperworkPhotofacade","paperworkPhotoobverse"};
+        String [] uploadUrls = new String[multipartFiles.length];
+        map =new ConcurrentHashMap<>();
+        try {
+            for (int i = 0; i < multipartFiles.length; i++) {
+                String filename = multipartFiles[i].getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    File newFile = new File(filename);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(multipartFiles[i].getBytes());
+                    os.close();
+                    multipartFiles[i].transferTo(newFile);
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_USERPROOF,userId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    uploadUrls[i]=uploadUrl;
+                    map.put(multipartFileToString[i],uploadUrl);
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);
+                }
+            }
+            String uuId=UUID.randomUUID().toString();
+            map.put("userid",userId);
+            map.put("TicketId", uuId);
+            map.put("paperworktype", paperworktype);
+            map.put("paperworkName",paperworkName);
+            map.put("paperworkNumber",paperworkNumber);
+            int num=userProofService.addUserProof(map);
+            if(0>=num){
+                return "{\"Message\":\"-1\"}";
+            }
+            return "{\"Message\":\"1\"}";
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return"{\"Message\":\"-2\"}";
+        }
+    }
+
+
+}

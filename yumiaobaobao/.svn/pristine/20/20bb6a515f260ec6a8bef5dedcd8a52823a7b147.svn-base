@@ -1,0 +1,226 @@
+package com.yumiaobaobao.app.proof.mechanismproof.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.common.dto.AliyunMessage;
+import com.yumiaobaobao.app.common.dto.AliyunOssParameter;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.AliyunOSSUpLoadUtil;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.LocalDelete;
+import com.yumiaobaobao.app.common.utils.util.RandomNumberUtil;
+import com.yumiaobaobao.app.proof.mechanismproof.entity.OrganizaTion;
+import com.yumiaobaobao.app.proof.mechanismproof.service.OrganizaTionService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+
+/**
+ * Created by WH on 2019/04/16.
+ */
+
+@RestController
+@Component
+@Api(tags = "机构认证 1.判断用户是否已经受理成功 或者存在正在受理的业务 1.机构认证填写提交")
+public class OrganizaTionConroller {
+
+
+    @Autowired
+    private OrganizaTionService organizaTionService;
+
+    private Map<String,Object> map;
+
+
+    @ApiOperation(value = "判断用户是否已经受理成功 " ,notes = "判断用户是否已经受理成功或者存在正在受理的业务" +
+            " Message -2=>该用户没有提交过认证申请 0=>机构认证正在审核中 1=>审核成功 -1=>审核失败  2=>未提交审核可以跳转认证界面 ")
+    @RequestMapping(value = "/selectAgencyDocument",method = RequestMethod.GET)
+    public String selectAgencyDocument(@ApiParam("申请者ID")@RequestParam("userId") String userId){
+        OrganizaTion result = organizaTionService.selectAgencyDocument(userId);
+            if(result==null){
+                return "{\"Message\":\"-2\"}";
+            }
+            switch (result.getStatus()){
+                case -1:
+                    return "{\"Message\":\"-1\"}";
+                case 1:
+                    return "{\"Message\":\"1\"}";
+                case 0:
+                    return "{\"Message\":\"0\"}";
+            }
+        return "{\"Message\":\"2\"}";
+    }
+
+    @ApiOperation(value = "新增机构认证",notes = "新增机构认证 Message -2验证码错误 0=>图片上传失败 -1=>提交失败 1成功 -3系统异常")
+    @RequestMapping(value = "/addOrganizaTion",method = RequestMethod.POST)
+    public String addOrganizaTion(
+            @ApiParam("申请者ID") @RequestParam("applicantId")String applicantId,
+            @ApiParam("头像")     @RequestParam("organizationAvatarimg")MultipartFile organizationAvatarimg,
+            @ApiParam("账号名称") @RequestParam("organizationName")String organizationName,
+            @ApiParam("机构简介") @RequestParam("organizationSynopsis")String organizationSynopsis,
+            @ApiParam("行业类别") @RequestParam("organizationType")String organizationType,
+            @ApiParam("所在地")   @RequestParam("organizationAddress")String organizationAddress,
+            @ApiParam("营业执照") @RequestParam("businesslicense")MultipartFile businesslicense,
+            @ApiParam("认证函")   @RequestParam("certificationletter")MultipartFile certificationletter,
+            @ApiParam("商标注册证") @RequestParam(value = "tradeMark",required = false)MultipartFile  tradeMark,
+            @ApiParam("办学许可证") @RequestParam(value = "Runningschool",required = false)MultipartFile Runningschool,
+            @ApiParam("民办非企业单位证书") @RequestParam(value = "Privateunit",required = false)MultipartFile Privateunit,
+            @ApiParam("其他证书") @RequestParam(value = "OthercertiFicate",required = false)MultipartFile OthercertiFicate,
+            @ApiParam("企业名称") @RequestParam("CompanyName")String CompanyName,
+            @ApiParam("统一社会信用代码") @RequestParam("UnifiedSocialNewCode")String UnifiedSocialNewCode,
+            @ApiParam("营业期限") @RequestParam("OperatingPeriod")String OperatingPeriod,
+            @ApiParam("运营者姓名") @RequestParam("BusinessName")String BusinessName,
+            @ApiParam("运营者手机号") @RequestParam("BusinessOperatorMobileNumber")String BusinessOperatorMobileNumber,
+            @ApiParam("验证码") @RequestParam("code")String code
+    ){
+
+        if (!code.equals(AliyunMessage.getAuthenticationMessage())){return "{\"Message\": \"-2\"}";} //判断验证码
+        MultipartFile[] multipartFiles = {organizationAvatarimg,businesslicense,certificationletter};
+        String [] multipartFileToString = {"organizationAvatarimg","businesslicense","certificationletter"};
+
+        String [] uploadUrls = new String[multipartFiles.length];
+        map =new ConcurrentHashMap<>();
+        try {
+            if(null !=tradeMark){
+                String filename = tradeMark.getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    //拿到文件后缀名  重新定义文件名
+                    String substr=filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(tradeMark.getBytes());
+                    os.close();
+                    tradeMark.transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_SHOPPROOF,applicantId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    map.put("tradeMark",uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+            }
+            if(null !=Runningschool){
+                String filename = Runningschool.getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    String substr=filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(Runningschool.getBytes());
+                    os.close();
+                    Runningschool.transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_SHOPPROOF,applicantId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    map.put("Runningschool",uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+            }
+            if(null !=Privateunit){
+                String filename = Privateunit.getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    String substr=filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(Privateunit.getBytes());
+                    os.close();
+                    Privateunit.transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_SHOPPROOF,applicantId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    map.put("Privateunit",uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+            }
+            if(null !=OthercertiFicate){
+                String filename = OthercertiFicate.getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    String substr=filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(OthercertiFicate.getBytes());
+                    os.close();
+                    OthercertiFicate.transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_SHOPPROOF,applicantId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    map.put("OthercertiFicate",uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+            }
+            for (int i =0; i<multipartFiles.length;i++) {
+                String filename = multipartFiles[i].getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    String substr=filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(multipartFiles[i].getBytes());
+                    os.close();
+                    multipartFiles[i].transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_SHOPPROOF,applicantId);
+                    if (uploadUrl == null || uploadUrl=="") {return "{\"Message\":\"0\"}";}
+                    uploadUrls[i]=uploadUrl;//把图片路径提取出来
+                    map.put(multipartFileToString[i],uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+            }
+        map.put("applicantId",applicantId);//申请者ID
+        map.put("organizationName",organizationName);//账号名称
+        map.put("organizationSynopsis",organizationSynopsis);//机构简介
+        map.put("organizationType",organizationType);//行业类别
+        map.put("organizationAddress",organizationAddress);//所在地
+
+        map.put("CompanyName",CompanyName);//企业名称
+        map.put("UnifiedSocialNewCode",UnifiedSocialNewCode);//统一社会信用代码
+        map.put("OperatingPeriod",OperatingPeriod);//营业期限
+        map.put("BusinessName",BusinessName);//运营者姓名
+        map.put("BusinessOperatorMobileNumber",BusinessOperatorMobileNumber);//运营者手机号
+
+        if(organizaTionService.addOrganizaTion(map)<=0){
+             return "{\"Message\":\"-1\"}";
+        }
+          return "{\"Message\":\"1\"}";
+        } catch (Exception ex) {
+            System.out.println(ex.getMessage());
+            return"{\"Message\":\"-3\"}";
+        }
+    }
+
+
+    @ApiOperation(value = "根据userid和机构名称查询机构",notes = "根据userid和机构名称查询机构 Message -0查询不到数据  =>1成功 ")
+    @RequestMapping(value = "/selectByUsridAndName",method = RequestMethod.GET)
+    public String selectByUsridAndName(
+            @ApiParam("申请者ID") @RequestParam("userid")String userid,
+            @ApiParam("机构名称") @RequestParam("organizationName")String organizationName){
+        List<OrganizaTion> organizaTions = organizaTionService.selectByUsridAndName(Integer.valueOf(userid), organizationName);
+        if (organizaTions==null||organizaTions.size()<=0) {
+            return "{\"Message\":\"0\"}";
+        }
+       return "{\"Message\":\"1\",\"Data\":"+ JSON.toJSONString(organizaTions)+"}";
+    }
+
+}

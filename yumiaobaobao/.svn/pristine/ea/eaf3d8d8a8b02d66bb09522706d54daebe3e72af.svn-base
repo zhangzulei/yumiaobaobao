@@ -1,0 +1,80 @@
+package com.yumiaobaobao.app.user.userupdate.service;
+
+import com.yumiaobaobao.app.user.entity.UserInfo;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+public interface UserUpdateService {
+
+    /**
+     * 修改用户头像
+     */
+    int updateHeadImg(String avatarImg,String userid);
+
+    /**
+     * 修改个人资料
+     */
+    int updateUserInfo(Map<String, Object> map);
+
+    /**
+     * 根据手机号查询用户  一个手机号对应一个用户
+     * @param userphone
+     * @return
+     */
+    UserInfo byUserPhoneToUserInfo(String userphone);
+    /**
+     * 修改手机号
+     * @param userphone
+     * @return
+     */
+    int updatePhone(String userphone,String userid);
+    /**
+     * 根据芋苗宝宝号查询用户
+     * @param YmMiaoAccoent
+     * @return
+     */
+    UserInfo selecByYmMiaoAccoent(String YmMiaoAccoent);
+    /**
+     * 修改芋苗宝宝号
+     * @param userId
+     * @param number
+     * @return
+     */
+    int updateYmMiaoAccoent( String userId,String number);
+    /**
+     * 根据用户id查询用户信息  单个参数
+     * @param userid 用户id
+     * @return
+     */
+    UserInfo selectUserInfoByUserId(String userid);
+
+    /**
+     * 修改最后登录时间
+     * */
+    int updateLoginTime(LocalDateTime date, String userid);
+
+    /**
+     * 更新成为会员
+     * */
+    int updateVip(Integer userid);
+
+    /**
+     * 更新取消会员
+     * */
+    int loseVip(Integer userid);
+
+    //改变用户中绑定的店铺id
+    int updateIsshop(Integer userid,Integer shopid);
+
+    //更新为小园丁
+    int updateGarder(Integer userid);
+
+    //更新已发布的便签数
+    int updateNoteNumber(UserInfo userInfo);
+
+    int updateComment(String userid,String type);
+}

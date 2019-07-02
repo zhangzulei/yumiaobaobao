@@ -1,0 +1,123 @@
+package com.yumiaobaobao.app.schoolscore.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.common.dto.AliyunOssParameter;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.AliyunOSSUpLoadUtil;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.LocalDelete;
+import com.yumiaobaobao.app.common.utils.util.RandomNumberUtil;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+import com.yumiaobaobao.app.schoolscore.service.schoolScoreService;
+import com.yumiaobaobao.app.user.entity.UserInfo;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/03/27.
+ */
+@RestController
+@Component
+@Api(tags = "课程评分操作：1.新增课程评分记录  2.根据课程id查询评论信息")
+public class scoreController {
+
+    @Autowired
+    private schoolScoreService schoolscoreService;
+    @Autowired
+    private com.yumiaobaobao.app.user.userupdate.service.UserUpdateService userUpdateService;
+
+    @RequestMapping(value = "addScore", method = RequestMethod.POST)
+    @ApiOperation(value = "提交课程评分", notes = "提交课程评分 Message 0 失败")
+    @Transactional
+    public String addScore(
+            @ApiParam("评价该商品的用户id") @RequestParam("userid") String userid,
+            @ApiParam("课程id") @RequestParam("courseid") String courseid,
+            @ApiParam("质量评分") @RequestParam("scorequality") String scorequality,
+            @ApiParam("环境评分") @RequestParam("scoresurroundings") String scoresurroundings,
+            @ApiParam("人气评分") @RequestParam("scorePopularity") String scorePopularity,
+            @ApiParam("课程所属商铺id") @RequestParam("school_id") String school_id,
+            @ApiParam("评论") @RequestParam(value = "comment", defaultValue = "null") String comment,
+            @ApiParam("评论图片") @RequestParam(value = "commentimg", required = false) MultipartFile commentimg
+    ) {
+        Map<String, Object> map = new HashMap<>();
+        map.put("userid", userid);
+        map.put("courseid", courseid);
+        map.put("scorequality", scorequality);
+        map.put("scoresurroundings", scoresurroundings);
+        map.put("scorePopularity", scorePopularity);
+        map.put("school_id", school_id);
+        if (comment != null) {
+            try {
+                String filename = commentimg.getOriginalFilename();
+                if (!"".equals(filename.trim())) {
+                    String substr = filename.substring(filename.lastIndexOf(".") + 1);
+                    String newName = RandomNumberUtil.randomnumberEnglish(8);
+                    File newFile = new File(newName);
+                    FileOutputStream os = new FileOutputStream(newFile);
+                    os.write(commentimg.getBytes());
+                    os.close();
+                    commentimg.transferTo(newFile);
+                    //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                    String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_COURSECOMMENT, userid);
+                    if (uploadUrl == null || uploadUrl == "") {
+                        return "{\"Message\":\"0\"}";
+                    }
+                    map.put("commentimg", uploadUrl);//存入对应数据库的map
+                    File file1 = new File("");
+                    String s = file1.getAbsolutePath();
+                    LocalDelete.delete(s + "\\" + newName);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                }
+             //   map.put("commentimg", commentimg);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+            }
+        }
+        int result = schoolscoreService.addScore(map);
+        if (result > 0) {
+            return "{\"Message\": \"1\"}";
+        }
+        return "{\"Message\": \"0\"}";
+    }
+
+
+    @RequestMapping(value = "selectByCourseId", method = RequestMethod.GET)
+    @ApiOperation(value = "根据课程id查询评论", notes = "根据课程id查询评论 Message =>0 失败 =>1成功")
+    public String selectByCourseId(@ApiParam("课程id") @RequestParam("courseId") String courseId) {
+        List<schoolscore> schoolscores = schoolscoreService.selectByCourseId(Integer.valueOf(courseId));
+        if (schoolscores == null || schoolscores.size() <= 0) {
+            return "{\"Message\":\"0\"}";
+        }
+        for (schoolscore schoolscore : schoolscores) {
+            UserInfo userInfo = userUpdateService.selectUserInfoByUserId(String.valueOf(schoolscore.getUserId()));
+            schoolscore.setUsername(userInfo.getUsername());
+            schoolscore.setAvatarImg(userInfo.getAvatarimg());
+        }
+        return "{\"Message\":\"1\",\"Data\":" + JSON.toJSONString(schoolscores) + "}";
+    }
+
+    @RequestMapping(value = "courseComment", method = RequestMethod.GET)
+    @ApiOperation(value = "根据课程id查询课程评论", notes = "根据课程id查询课程评论 Message 0 没有数据")
+    public String courseComment(Integer courseId) {
+        List<schoolscore> schoolcourseList = schoolscoreService.courseComment(courseId);
+        if (schoolcourseList == null || schoolcourseList.size() == 0) {
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(schoolcourseList) + "}";
+    }
+
+
+
+}

@@ -1,0 +1,99 @@
+package com.yumiaobaobao.app.taiking.entity;
+
+import java.time.LocalDateTime;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+public class TaiKing {
+
+    private int talkingid;
+
+    private int talkingnumber;
+
+    private int talkingLook;
+
+    private int talkingtouch;
+
+    private String talkingtitle;
+
+    private String talkingnote;
+
+    private LocalDateTime talkingDatetime;
+
+    private String taikingImg;
+
+    private String talkingurl;
+
+    public String getTalkingurl() {
+        return talkingurl;
+    }
+
+    public void setTalkingurl(String talkingurl) {
+        this.talkingurl = talkingurl;
+    }
+
+    public String getTaikingImg() {
+        return taikingImg;
+    }
+
+    public void setTaikingImg(String taikingImg) {
+        this.taikingImg = taikingImg;
+    }
+
+    public int getTalkingid() {
+        return talkingid;
+    }
+
+    public void setTalkingid(int talkingid) {
+        this.talkingid = talkingid;
+    }
+
+    public int getTalkingnumber() {
+        return talkingnumber;
+    }
+
+    public void setTalkingnumber(int talkingnumber) {
+        this.talkingnumber = talkingnumber;
+    }
+
+    public int getTalkingLook() {
+        return talkingLook;
+    }
+
+    public void setTalkingLook(int talkingLook) {
+        this.talkingLook = talkingLook;
+    }
+
+    public int getTalkingtouch() {
+        return talkingtouch;
+    }
+
+    public void setTalkingtouch(int talkingtouch) {
+        this.talkingtouch = talkingtouch;
+    }
+
+    public String getTalkingtitle() {
+        return talkingtitle;
+    }
+
+    public void setTalkingtitle(String talkingtitle) {
+        this.talkingtitle = talkingtitle;
+    }
+
+    public String getTalkingnote() {
+        return talkingnote;
+    }
+
+    public void setTalkingnote(String talkingnote) {
+        this.talkingnote = talkingnote;
+    }
+
+    public LocalDateTime getTalkingDatetime() {
+        return talkingDatetime;
+    }
+
+    public void setTalkingDatetime(LocalDateTime talkingDatetime) {
+        this.talkingDatetime = talkingDatetime;
+    }
+}

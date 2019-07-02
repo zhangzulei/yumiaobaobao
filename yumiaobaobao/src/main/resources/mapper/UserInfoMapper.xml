@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumiaobaobao.app.user.dao.UserRelatedMapper">
+  <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.UserInfo">
+    <id column="userId" jdbcType="INTEGER" property="userid" />
+    <result column="userName" jdbcType="VARCHAR" property="username" />
+    <!--<result column="yumiaoAccount" jdbcType="VARCHAR" property="yumiaoaccount" />-->
+    <result column="signature" jdbcType="VARCHAR" property="signature" />
+    <result column="userGender" jdbcType="SMALLINT" property="usergender" />
+    <result column="userAddrss" jdbcType="VARCHAR" property="useraddrss" />
+    <result column="userPhone" jdbcType="VARCHAR" property="userphone" />
+    <result column="weChatOpenId" jdbcType="VARCHAR" property="wechatopenid" />
+    <result column="qqOpenId" jdbcType="VARCHAR" property="qqopenid" />
+    <result column="registrationTime" jdbcType="TIMESTAMP" property="registrationtime" />
+    <result column="avatarImg" jdbcType="VARCHAR" property="avatarimg" />
+    <result column="authentication" jdbcType="SMALLINT" property="authentication" />
+    <result column="userbirthday" jdbcType="VARCHAR" property="userbirthday" />
+    <result column="isVIP" jdbcType="INTEGER" property="isvip" />
+    <result column="isshop" jdbcType="INTEGER" property="isshop" />
+    <result column="shopid" jdbcType="INTEGER" property="shopid" />
+    <!--<result column="NoteNumber" jdbcType="INTEGER" property="notenumber" />-->
+    <!--<result column="attentionNumber" jdbcType="INTEGER" property="attentionnumber" />-->
+    <!--<result column="fanNumber" jdbcType="INTEGER" property="fannumber" />-->
+    <!--<result column="isGarder" jdbcType="INTEGER" property="isgarder" />-->
+    <!--<result column="lastLoginTime" jdbcType="TIMESTAMP" property="lastlogintime" />-->
+    <result column="allowcomment" jdbcType="INTEGER" property="allowcomment" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    userId, userName, yumiaoAccount, signature, userGender, userAddrss, userPhone, weChatOpenId, 
+    qqOpenId, registrationTime, avatarImg, authentication, userbirthday, isVIP, isshop, 
+    shopid, NoteNumber, attentionNumber, fanNumber, isGarder, lastLoginTime, allowcomment
+  </sql>
+
+  <!--&lt;!&ndash;查询用户名是否重复&ndash;&gt;
+  <select id="selectUserName" resultMap="BaseResultMap" parameterType="java.util.Map">
+    select * FROM  user_info
+    where 1=1
+    AND
+    userName = #{username,jdbcType=VARCHAR}
+  </select>-->
+
+</mapper>

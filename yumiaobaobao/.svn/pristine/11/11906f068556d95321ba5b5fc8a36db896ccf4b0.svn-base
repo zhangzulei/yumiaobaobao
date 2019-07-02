@@ -1,0 +1,210 @@
+package com.yumiaobaobao.app.user.entity;
+
+import java.time.LocalDateTime;
+
+public class UserInfo {
+    private int NoteNumber;
+
+    private int attentionNumber;
+
+    private int fanNumber;
+
+    private Integer userid;
+
+    private Integer isshop;
+    private Integer isvip;
+
+    private Integer shopid;
+
+    private String username;
+
+    private String yumiaoAccount;
+
+    private String signature;
+
+    private Short usergender;
+
+    private String useraddrss;
+
+    private String userphone;
+
+    private String wechatopenid;
+
+    private String qqopenid;
+
+    private LocalDateTime registrationtime;
+
+    private String avatarimg;
+
+    private Short authentication;
+
+    private LocalDateTime userbirthday;
+
+    private LocalDateTime lastLoginTime;
+
+    private Integer isGarder;
+
+    public Integer getIsGarder() {
+        return isGarder;
+    }
+
+    public void setIsGarder(Integer isGarder) {
+        this.isGarder = isGarder;
+    }
+
+    public LocalDateTime getLastLoginTime() {
+        return lastLoginTime;
+    }
+
+    public void setLastLoginTime(LocalDateTime lastLoginTime) {
+        this.lastLoginTime = lastLoginTime;
+    }
+
+    public Integer getIsvip() {
+        return isvip;
+    }
+
+    public void setIsvip(Integer isvip) {
+        this.isvip = isvip;
+    }
+
+    public String getYumiaoAccount() {
+        return yumiaoAccount;
+    }
+
+    public void setYumiaoAccount(String yumiaoAccount) {
+        this.yumiaoAccount = yumiaoAccount;
+    }
+    public int getNoteNumber() {
+        return NoteNumber;
+    }
+
+    public void setNoteNumber(int noteNumber) {
+        NoteNumber = noteNumber;
+    }
+
+    public int getAttentionNumber() {
+        return attentionNumber;
+    }
+
+    public void setAttentionNumber(int attentionNumber) {
+        this.attentionNumber = attentionNumber;
+    }
+
+    public int getFanNumber() {
+        return fanNumber;
+    }
+
+    public void setFanNumber(int fanNumber) {
+        this.fanNumber = fanNumber;
+    }
+
+    public Integer getIsshop() {
+        return isshop;
+    }
+
+    public void setIsshop(Integer isshop) {
+        this.isshop = isshop;
+    }
+
+    public Integer getShopid() {
+        return shopid;
+    }
+
+    public void setShopid(Integer shopid) {
+        this.shopid = shopid;
+    }
+
+    public LocalDateTime getUserbirthday() {
+        return userbirthday;
+    }
+
+    public void setUserbirthday(LocalDateTime userbirthday) {
+        this.userbirthday = userbirthday;
+    }
+
+    public Integer getUserid() {
+        return userid;
+    }
+
+    public void setUserid(Integer userid) {
+        this.userid = userid;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username == null ? null : username.trim();
+    }
+
+
+    public String getSignature() {
+        return signature;
+    }
+
+    public void setSignature(String signature) {
+        this.signature = signature == null ? null : signature.trim();
+    }
+
+    public Short getUsergender() {
+        return usergender;
+    }
+
+    public void setUsergender(Short usergender) {
+        this.usergender = usergender;
+    }
+
+    public String getUseraddrss() {
+        return useraddrss;
+    }
+
+    public void setUseraddrss(String useraddrss) {
+        this.useraddrss = useraddrss == null ? null : useraddrss.trim();
+    }
+
+    public String getUserphone() {
+        return userphone;
+    }
+
+    public void setUserphone(String userphone) {
+        this.userphone = userphone == null ? null : userphone.trim();
+    }
+
+    public String getWechatopenid() {
+        return wechatopenid;
+    }
+
+    public void setWechatopenid(String wechatopenid) {this.wechatopenid = wechatopenid == null ? null : wechatopenid.trim();}
+
+    public String getQqopenid() {
+        return qqopenid;
+    }
+
+    public void setQqopenid(String qqopenid) {
+        this.qqopenid = qqopenid == null ? null : qqopenid.trim();
+    }
+
+    public LocalDateTime getRegistrationtime() {return registrationtime;}
+
+    public void setRegistrationtime(LocalDateTime registrationtime) {
+        this.registrationtime = registrationtime;
+    }
+
+    public String getAvatarimg() {
+        return avatarimg;
+    }
+
+    public void setAvatarimg(String avatarimg) {
+        this.avatarimg = avatarimg == null ? null : avatarimg.trim();
+    }
+
+    public Short getAuthentication() {
+        return authentication;
+    }
+
+    public void setAuthentication(Short authentication) {
+        this.authentication = authentication;
+    }
+}

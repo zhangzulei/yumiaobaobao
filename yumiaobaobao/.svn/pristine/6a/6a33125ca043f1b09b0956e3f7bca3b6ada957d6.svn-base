@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.user.dao.nice_detailMapper" >
+  <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.nice_detail" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="userId" property="userid" jdbcType="VARCHAR" />
+    <result column="templateId" property="templateid" jdbcType="VARCHAR" />
+    <result column="createTime" property="createtime" jdbcType="TIMESTAMP" />
+    <!--<association javaType="com.yumiaobaobao.app.user.entity.UserInfo" property="UserInfo">
+    <id column="userId" jdbcType="VARCHAR" property="userid" />
+    <result column="userName" jdbcType="VARCHAR" property="username" />
+    <result column="yumiaoAccount" jdbcType="VARCHAR" property="yumiaoAccount" />
+    </association>
+    <association property="index_discover" javaType="com.yumiaobaobao.app.user.entity.index_discover">
+      <result column="templateID" jdbcType="VARCHAR" property="templateid" />
+      <result column="Images" jdbcType="VARCHAR" property="images" />
+      <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+      <result column="atUser" jdbcType="VARCHAR" property="atUser" />
+    </association>-->
+  </resultMap>
+  <select id="noticeCollect" resultMap="BaseResultMap">
+    select u.userId,u.userName,i.Images,n.createTime from user_info u
+    inner join nice_detail n
+    on u.userId=n.userId
+    inner join index_discover i
+    on i.templateID=n.templateId
+  </select>
+</mapper>

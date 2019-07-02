@@ -1,0 +1,52 @@
+package com.yumiaobaobao.app.moremenu.mycollection.dao;
+
+import com.yumiaobaobao.app.moremenu.mycollection.entity.Collection;
+import com.yumiaobaobao.app.user.entity.v_note;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+@Repository
+public interface CollectionMapper {
+
+    /**
+     * 查询我收藏的便签
+     * @param userId
+     * @return
+     */
+    @Select("SELECT * FROM collection   WHERE userid =  #{userId}")
+    List<Collection> selectMyCollection(@Param("userId")String userId);
+
+    @Select("SELECT * FROM v_note   WHERE noteuserId =  #{noteuserId}")
+    List<v_note> selectMyCollection1(@Param("noteuserId")String noteuserId);
+
+    //增加收藏
+    @Insert("insert into collection (userid,Noteid,Collectiontime,noteuserId,noteuserinfo) values(#{map.userid},#{map.Noteid},#{map.Collectiontime},#{map.noteuserId},#{map.noteuserinfo})")
+    int addCollection(@Param("map")Map map);
+
+    //通过便签id查询收藏记录(月)
+    List<Map<String,Object>> selectByNoteid(@Param("list") List<String> list,@Param("year") String year);
+
+    //通过便签id查询收藏记录(年)
+    List<Map<String,Object>> selectYearByNoteid(@Param("list") List<String> list);
+
+    //查询是否已经被收藏
+    @Select("select * from collection where userid = #{userid} and Noteid = #{noteid}")
+    List<Collection> selectCollectionByUseridAndNoteid(@Param("userid")String userid,@Param("noteid")String noteid);
+
+    //查询用户发布便签获得收藏信息
+    @Select("select c.*,u.* from collection c left join index_discover i on c.Noteid = i.ID left join user_info u on i.userID " +
+            "= u.userID where u.userID = #{userid}")
+    List<Collection> selectCollectionByUserid(@Param("userid")String userid);
+
+    //查询便签被收藏记录（月）
+    @Select("select count(id) from collection where Noteid = #{Noteid} and #{starttime}<= Collectiontime <=#{endtime} and YEAR(Collectiontime) = #{year}")
+    String countsFromControllor(@Param("Noteid")String Noteid, @Param("starttime") String starttime, @Param("endtime")String endtime,@Param("year")String year);
+}

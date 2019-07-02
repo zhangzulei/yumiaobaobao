@@ -1,0 +1,42 @@
+package com.yumiaobaobao.app.user.comment.service;
+
+import com.yumiaobaobao.app.user.entity.index_discover;
+
+import java.util.List;
+import java.util.Map;
+
+public interface Serviceindex_discover {
+    List<index_discover> alltemplate( String nainiuaccoent);
+
+    index_discover searchContent( String content);
+
+    Boolean changeFavo(index_discover index_discover);
+
+    List<index_discover> notagsAll();
+
+    List<index_discover> AllLocation(Double Latitude, Double Longitude);
+
+    index_discover oneTemplate( String templateID);
+
+    List<index_discover> fuzzyQuery( String content);
+
+    Boolean changecommentCount(index_discover index_discover);
+
+    Boolean changeCollectCount(index_discover index_discover);
+
+    int addIndexDiscover(Map<String, Object> map);
+
+    List<index_discover> selectAll();
+
+    List<index_discover> selectByUseridLast(Integer userid);
+    index_discover selectCollection(Integer Noteid);
+
+    List<index_discover> recommendNotes( Integer talkingid);
+
+    List<index_discover> selectByUserid(String userid);
+
+    int hideIsShow(String userid,String isshow);
+
+    List<index_discover> randomIndexDiscover();
+
+}

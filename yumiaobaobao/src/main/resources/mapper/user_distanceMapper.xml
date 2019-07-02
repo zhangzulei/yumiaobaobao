@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.user.dao.user_distanceMapper" >
+  <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.user_distance" >
+    <id column="ID" property="id" jdbcType="INTEGER" />
+    <result column="distance" property="distance" jdbcType="DOUBLE" />
+    <association javaType="com.yumiaobaobao.app.user.entity.index_discover" property="index_discover">
+      <id column="ID" jdbcType="INTEGER" property="id" />
+      <result column="templateID" jdbcType="VARCHAR" property="templateid" />
+      <result column="Images" jdbcType="VARCHAR" property="images" />
+      <result column="favoCount" jdbcType="BIGINT" property="favocount" />
+      <result column="Content" jdbcType="VARCHAR" property="content" />
+      <result column="userID" jdbcType="VARCHAR" property="userid" />
+      <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+      <result column="CommentID" jdbcType="VARCHAR" property="commentid" />
+      <result column="Latitude" jdbcType="INTEGER" property="latitude" />
+      <result column="Longitude" jdbcType="INTEGER" property="longitude" />
+      <result column="currentLocation" jdbcType="VARCHAR" property="currentLocation" />
+    </association>
+    <association javaType="com.yumiaobaobao.app.user.entity.UserInfo" property="UserInfo">
+      <id column="userId" jdbcType="VARCHAR" property="userid" />
+      <result column="userName" jdbcType="VARCHAR" property="username" />
+      <result column="yumiaoAccount" jdbcType="VARCHAR" property="yumiaoAccount" />
+    </association>
+    <association javaType="com.yumiaobaobao.app.globaltype.entity.SchoolType" property="SchoolType">
+      <id column="ID" jdbcType="INTEGER" property="id" />
+      <result column="schooltypename" jdbcType="VARCHAR" property="schooltypename" />
+    </association>
+  </resultMap>
+
+  <select id="locationUser" resultMap="BaseResultMap">
+        select i.ID,i.templateID,i.favoCount,i.userID,i.CreateTime,i.currentLocation,i.schooltypename,i.Content,i.userId,
+        i.Latitude,i.Longitude,u.nainiuaccoent,d.distance
+        from index_discover i
+        inner join user_info u
+        on i.userID=u.userId
+		inner join user_distance d
+		on i.templateID=d.templateId
+		order by d.distance asc
+  </select>
+
+</mapper>

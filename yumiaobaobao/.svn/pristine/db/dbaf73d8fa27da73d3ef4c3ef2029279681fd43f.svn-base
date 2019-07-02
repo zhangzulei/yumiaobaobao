@@ -1,0 +1,10 @@
+package com.yumiaobaobao.app.user.search.service;
+
+
+import com.yumiaobaobao.app.user.entity.search_history;
+import java.util.List;
+
+public interface Search_HistoryService {
+    Boolean addHistory(search_history search_history);
+    List<search_history> allHistory(String userId);
+}

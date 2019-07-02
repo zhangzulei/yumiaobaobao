@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumiaobaobao.app.user.dao.user_commentMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.user_comment">
+        <id column="ID" jdbcType="INTEGER" property="id" />
+        <result column="CommentID" jdbcType="VARCHAR" property="commentid" />
+        <result column="CommentContent" jdbcType="VARCHAR" property="commentcontent" />
+        <result column="userID" jdbcType="VARCHAR" property="userid" />
+        <result column="favoCount" jdbcType="BIGINT" property="favocount" />
+        <result column="createTime" jdbcType="TIMESTAMP" property="createtime" />
+        <association javaType="com.yumiaobaobao.app.user.entity.index_discover" property="index_discover">
+            <id column="ID" jdbcType="INTEGER" property="id" />
+            <result column="templateID" jdbcType="VARCHAR" property="templateid" />
+            <result column="Images" jdbcType="VARCHAR" property="images" />
+            <result column="favoCount" jdbcType="BIGINT" property="favocount" />
+            <result column="Content" jdbcType="VARCHAR" property="content" />
+            <result column="userID" jdbcType="VARCHAR" property="userid" />
+            <result column="CreateTime" jdbcType="TIMESTAMP" property="createtime" />
+            <result column="currentLocation" jdbcType="VARCHAR" property="currentLocation" />
+        </association>
+        <association javaType="com.yumiaobaobao.app.user.entity.UserInfo" property="UserInfo">
+            <id column="userId" jdbcType="VARCHAR" property="userid" />
+            <result column="userName" jdbcType="VARCHAR" property="username" />
+        </association>
+    </resultMap>
+    <!--所有评论的信息-->
+    <select id="allcomment" resultMap="BaseResultMap">
+        select i.templateID,c.commentID,c.commentContent,c.favoCount,u.userName,u.userId
+        from user_comment c inner join index_discover i on c.templateID=i.templateID
+        inner join user_info u on c.userId=u.userId
+    </select>
+    <!--更改用户评论的数量-->
+    <update id="updateFavoCount" parameterType="com.yumiaobaobao.app.user.entity.user_comment">
+        update user_comment set favocount=#{favocount},favostatus=#{favostatus} where commentid=#{commentid}
+    </update>
+
+
+</mapper>

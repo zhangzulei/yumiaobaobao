@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumiaobaobao.app.shop.dao.SchoolshopMapper">
+  <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.shop.entity.Schoolshop">
+    <id column="id" jdbcType="INTEGER" property="id" />
+    <result column="schoolname" jdbcType="VARCHAR" property="schoolname" />
+    <result column="avgscore" jdbcType="INTEGER" property="avgscore" />
+    <result column="qualityscore" jdbcType="INTEGER" property="qualityscore" />
+    <result column="surroundingsscore" jdbcType="INTEGER" property="surroundingsscore" />
+    <result column="Popularityscore" jdbcType="INTEGER" property="popularityscore" />
+    <result column="percapita" jdbcType="INTEGER" property="percapita" />
+    <result column="description" jdbcType="VARCHAR" property="description" />
+    <result column="schooltype" jdbcType="SMALLINT" property="schooltype" />
+    <result column="schoolOpentime" jdbcType="VARCHAR" property="schoolopentime" />
+    <result column="schooladdress" jdbcType="VARCHAR" property="schooladdress" />
+    <result column="schoolphone" jdbcType="VARCHAR" property="schoolphone" />
+    <result column="schoolcoll" jdbcType="VARCHAR" property="schoolcoll" />
+    <result column="schoolserviceid" jdbcType="VARCHAR" property="schoolserviceid" />
+    <result column="otherid" jdbcType="VARCHAR" property="otherid" />
+    <result column="sendtime" jdbcType="VARCHAR" property="sendtime" />
+    <result column="isparking" jdbcType="INTEGER" property="isparking" />
+    <result column="iswifi" jdbcType="INTEGER" property="iswifi" />
+    <result column="isactivity" jdbcType="INTEGER" property="isactivity" />
+    <result column="distance" jdbcType="INTEGER" property="distance" />
+    <result column="schoolshopImg" jdbcType="VARCHAR" property="schoolshopimg" />
+    <result column="fenNumber" jdbcType="INTEGER" property="fennumber" />
+    <result column="tradingArea" jdbcType="INTEGER" property="tradingarea" />
+    <result column="couresNumber" jdbcType="INTEGER" property="couresnumber" />
+    <result column="classType" jdbcType="INTEGER" property="classType" />
+    <result column="tradingareaName" jdbcType="INTEGER" property="tradingareaName" />
+    <result column="avatarImg" jdbcType="VARCHAR" property="avatarImg" />
+  </resultMap>
+  <sql id="Base_Column_List">
+    id, schoolname, avgscore, qualityscore, surroundingsscore, Popularityscore, percapita,
+    description, schooltype, schoolOpentime, schooladdress, schoolphone, schoolcoll, 
+    schoolserviceid, otherid, sendtime, isparking, iswifi, isactivity, distance, schoolshopImg, 
+    fenNumber, tradingArea, couresNumber,avatarImg
+  </sql>
+
+<!--课程店铺高级筛选-->
+  <select id="selectAllShop" resultMap="BaseResultMap" parameterType="com.yumiaobaobao.app.shop.entity.Schoolshop" >
+    SELECT
+    a.*,
+    b.`name`AS tradingareaName
+    FROM
+    school_shop a,
+    trading_area b
+    WHERE 1=1
+    and  a.tradingArea=b.id
+    <if test="tradingarea != null and tradingarea != ''">
+      and tradingarea = #{tradingarea}
+    </if>
+    <if test="avgscore != null and avgscore != ''">
+      and avgscore = #{avgscore}
+    </if>
+    <if test="qualityscore != null and qualityscore != ''">
+      and qualityscore = #{qualityscore}
+    </if>
+    <if test="Popularityscore != null and Popularityscore != ''">
+      and Popularityscore = #{Popularityscore}
+    </if>
+    <if test="distance != null and distance != ''">
+      and distance = #{distance}
+    </if>
+    <if test="percapita != null and percapita != ''">
+      and percapita = #{percapita}
+    </if>
+    <if test="isparking != null and isparking != ''">
+      and isparking = #{isparking}
+    </if>
+    <if test="iswifi != null and iswifi != ''">
+      and iswifi = #{iswifi}
+    </if>
+    <if test="isactivity != null and isactivity != ''">
+      and isactivity = #{isactivity}
+    </if>
+  </select>
+
+
+
+  <!--根据课程类型查询店铺-->
+  <select id="selectClassType" resultMap="BaseResultMap" parameterType="com.yumiaobaobao.app.shop.entity.Schoolshop" >
+    SELECT
+    b.*, c.*
+    FROM
+    school_shop b,
+    school_type c
+    WHERE
+    1 = 1
+    AND b.classType = c.id
+    <if test="classType != null and classType != ''">
+     AND b.classType = #{classType}
+    </if>
+    <if test="tradingarea != null and tradingarea != ''">
+      and b.tradingarea = #{tradingarea}
+    </if>
+    <if test="avgscore != null and avgscore != ''">
+      and b.avgscore = #{avgscore}
+    </if>
+    <if test="qualityscore != null and qualityscore != ''">
+      and b.qualityscore = #{qualityscore}
+    </if>
+    <if test="Popularityscore != null and Popularityscore != ''">
+      and b.Popularityscore = #{Popularityscore}
+    </if>
+    <if test="distance != null and distance != ''">
+      and b.distance = #{distance}
+    </if>
+    <if test="percapita != null and percapita != ''">
+      and b.percapita = #{percapita}
+    </if>
+    <if test="isparking != null and isparking != ''">
+      and b.isparking = #{isparking}
+    </if>
+    <if test="iswifi != null and iswifi != ''">
+      and b.iswifi = #{iswifi}
+    </if>
+    <if test="isactivity != null and isactivity != ''">
+      and b.isactivity = #{isactivity}
+    </if>
+  </select>
+
+
+</mapper>

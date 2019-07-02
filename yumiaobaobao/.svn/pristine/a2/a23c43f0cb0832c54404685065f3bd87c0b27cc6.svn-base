@@ -1,0 +1,522 @@
+package com.yumiaobaobao.app.user.comment.controllor;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.common.dto.AliyunOssParameter;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.AliyunOSSUpLoadUtil;
+import com.yumiaobaobao.app.common.utils.aliyunossutil.LocalDelete;
+import com.yumiaobaobao.app.common.utils.util.DateUtils;
+import com.yumiaobaobao.app.common.utils.util.RandomNumberUtil;
+import com.yumiaobaobao.app.globaltype.entity.SchoolType;
+import com.yumiaobaobao.app.globaltype.service.SchoolTypeService;
+import com.yumiaobaobao.app.moremenu.mycollection.service.CollectionService;
+import com.yumiaobaobao.app.taiking.entity.TaiKing;
+import com.yumiaobaobao.app.taiking.taikingupdate.service.TaiKingUpdateService;
+import com.yumiaobaobao.app.user.comment.service.Serviceindex_discover;
+import com.yumiaobaobao.app.user.entity.*;
+import com.yumiaobaobao.app.user.like.jpush.JPush;
+import com.yumiaobaobao.app.user.like.service.Nice_DetailService;
+import com.yumiaobaobao.app.user.scorechange.entity.scorechange;
+import com.yumiaobaobao.app.user.search.service.Search_HistoryService;
+import com.yumiaobaobao.app.user.usermember.service.user_level_infoService;
+import com.yumiaobaobao.app.user.userupdate.service.UserUpdateService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import lombok.extern.slf4j.Slf4j;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
+
+import java.io.File;
+import java.io.FileOutputStream;
+import java.util.*;
+
+@Api(tags = "首页数据展现,发现动态详情，模糊查询，便签发布，点赞操作，附近便签查询显示")
+@Slf4j
+@RestController
+public class Index_discoverController {
+    private final Logger logger = LoggerFactory.getLogger(getClass());
+    @Autowired
+    private Serviceindex_discover serviceindexDiscover;
+    @Autowired
+    private SchoolTypeService schoolType;
+    @Autowired
+    private TaiKingUpdateService talking;
+    @Autowired
+    private Nice_DetailService detailService;
+    @Autowired
+    private Search_HistoryService historyService;
+    @Autowired
+    private user_level_infoService user_level_info;
+    @Autowired
+    private UserUpdateService userUpdateService;
+    @Autowired
+    private CollectionService collectionService;
+    @Autowired
+    private com.yumiaobaobao.app.user.scorechange.service.scorechangeService scorechangeService;
+
+    @GetMapping(value = "/alltemplate")
+    @ApiOperation(value = "首页发现模板信息", notes = "首页发现模板信息 Message =>0 查询不到数据  Message=>1 查询成功")
+    public String template(@ApiParam("奶牛妈妈号") @RequestParam("nainiuaccoent") String nainiuaccoent,
+                           @ApiParam("用户id") @RequestParam("userId") String userId) {
+        //查询Talking信息
+        List<user_favo> favos = talking.confirmShow(userId);
+        //如果talking不为零
+        if (favos.size() != 0) {
+            return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString
+                    (serviceindexDiscover.alltemplate(nainiuaccoent)) + "}";
+        } else {
+            List<index_discover> list = serviceindexDiscover.notagsAll();
+            if (list == null || list.size() == 0) {
+                return "{\"Message\": \"0\"}";
+            } else {
+                return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(list) + "}";
+            }
+//            int size = list.size();
+//            Random random = new Random();
+//            for(int i=0;i<=list.size();i++){
+//                int randoms = random.nextInt(size);-
+//                index_discover temp= list.get(i);
+//                list.set(i,list.get(randoms));
+//                list.set(randoms,temp);
+//            }
+        }
+    }
+
+    @ApiOperation(value = "点赞", notes = "改变喜欢数量 Message =>0 只能点赞一次   1=>点赞成功   -1=>没有该条说说  " +
+            "-2=>新增点赞记录失败   -3=>改变点赞数量失败  -4=>不能给自己点赞")
+    @GetMapping(value = "/changefavoCount")
+    public synchronized String changfavoCounts(
+            @ApiParam("被点赞的便签id") @RequestParam("templateid") String templateid,
+            @ApiParam("用户id") @RequestParam("userId") String userId,@RequestParam(value = "username") String username) {
+        nice_detail detail = new nice_detail();
+//        nice_detail detail = new nice_detail();
+//        detail.setUserid(userId);
+//        detail.setTemplateid(templateid);
+        Map<String, Object> map = new HashMap<String, Object>();
+        map.put("userid", userId);
+        map.put("templateid", templateid);
+        //查找是否有该条记录
+        List<nice_detail> detail1 = detailService.findNiceDetail(map);
+        System.out.println("是否有条记录"+detail1);
+//        nice_detail detail = new nice_detail();
+//        detail.setUserid(userId);
+//        detail.setTemplateid(templateid);
+        //设置返回值
+        Long result = 0l;
+        if (null == detail1 || detail1.size() <= 0) {
+/*            log.info("得到该条点赞记录" + ":" + detail1);
+            //如果找到该条记录，则删除，同时说说的点赞数量减一
+            //删除记录
+            detailService.deleteNiceDetail(detail1.getId());
+            index_discover discover = serviceindexDiscover.oneTemplate(templateid);
+            discover.setFavocount(discover.getFavocount() - 1);
+            result = discover.getFavocount();
+            log.info("减过的点数为" + ":" + result);
+            serviceindexDiscover.changeFavo(discover);
+        } else {*/
+            //如果没有该条记录,则添加该条记录，同时说说点赞数量加一
+            //添加记录
+            log.info("没有该条点赞记录");
+            //增加点赞记录
+//            detailService.addNiceDetail(map);
+//            nice_detail nice_detail = new nice_detail();
+//            nice_detail.setTemplateid(templateid);
+//            nice_detail.setUserid(userId);
+
+            //根据说说ID来查找说说详情
+            index_discover discover = serviceindexDiscover.oneTemplate(templateid);
+            //被点赞人的id,用于消息推送和查询用户的信息
+            String alias = discover.getUserid();
+            if (discover == null) {
+                return "{\"Message\": \"-1\"}";
+            }
+            if(alias.equals(userId)){
+                return "{\"Message\": \"-4\"}";
+            }
+            //增加点赞记录
+            map.put("createtime", new Date());
+            map.put("userinfoId", alias);
+            map.put("news",username);
+            Integer integer = detailService.addNiceDetail(map);
+            if (integer == 0) {
+                return "{\"Message\": \"-2\"}";
+            }
+            //点赞数加1
+            discover.setFavocount(discover.getFavocount() + 1);
+            result = discover.getFavocount();
+            log.info("加过的点赞数为" + ":" + result);
+            //更新点赞数量
+            Boolean aBoolean = serviceindexDiscover.changeFavo(discover);
+            Map<String,String> parm = new HashMap<>();
+            //这里的id是,移动端集成极光并登陆后,极光用户的rid
+            //*parm.put("id", "190e35f7e00692e3c9e");*//*
+            //设置提示信息,内容是文章标题
+            parm.put("msg", username+"给您点赞了");
+            JPush.jpushIOS(parm, alias);
+            if (!aBoolean) {
+                return "{\"Message\": \"-3\"}";
+            }
+            return "{\"Message\": \"1\"}";
+        } else {
+            log.info("已有该条点赞记录");
+            return "{\"Message\": \"0\"}";
+
+        }
+    }
+
+    @ApiOperation(value = "获取便签详情", notes = "获取便签详情 Mseeage =>0 查询不到信息  Message =>1 查询成功")
+    @GetMapping("/oneTemplate")
+    public String oneTemplate(@ApiParam("templateID") @RequestParam("templateID") String templateID) {
+        index_discover index_discover = serviceindexDiscover.oneTemplate(templateID);
+        if (index_discover == null) {
+            return "{\"Message\": \"0\"}";
+        }
+        List<TaiKing> taiKings = talking.selectById(String.valueOf(index_discover.getTalkingid()));
+        index_discover.setTalkingName(taiKings.get(0).getTalkingtitle());
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discover) + "}";
+    }
+
+
+    @ApiOperation(value = "模糊查询", notes = "根据传来的搜索内容来进行查询 Message =>0 没有数据  " +
+            "=>1 查询成功  =>-1 新增搜索失败  =>-2搜索内容为空")
+    @GetMapping("/fuzzy")
+    public String fuzzySearch(@ApiParam("传递的内容") @RequestParam("content") String content,
+                              @ApiParam("用户id") @RequestParam("userId") String userId) {
+        if (null == content) {
+            //如果搜索内容为空则返回空值
+            return "{\"Message\": \"-2\"}";
+        }
+        log.info("搜索内容content" + ":" + content);
+        List<index_discover> index_discovers = new ArrayList<index_discover>();
+        search_history history = new search_history();
+        //查询所有Talking类型
+        List<SchoolType> types = schoolType.allTypeName();
+        if (types == null || types.size() <= 0) {
+            //对发布的说说的内容进行模糊查询
+            history.setHistorysearch(content);
+            UserInfo userinfo = new UserInfo();
+            userinfo.setUserid(Integer.valueOf(userId));
+            history.setUserinfo(userinfo);
+//              historyService.addHistory(history);
+            Boolean aBoolean = historyService.addHistory(history);
+            if (!aBoolean) {
+                return "{\"Message\": \"-1\"}";
+            }
+            index_discovers = serviceindexDiscover.fuzzyQuery(content, "");
+            if (index_discovers == null || index_discovers.size() <= 0) {
+                return "{\"Message\": \"0\"}";
+            }
+        }else{
+            for (int i = 0; i < types.size(); i++) {
+                if (types.get(i).getSchooltypename().contains(content)) {
+                    //对搜索类型进行模糊查询
+                    history.setHistorysearch(content);
+                    UserInfo userinfo = new UserInfo();
+                    userinfo.setUserid(Integer.valueOf(userId));
+                    history.setUserinfo(userinfo);
+                    Boolean aBoolean = historyService.addHistory(history);
+                    if (!aBoolean) {
+                        return "{\"Message\": \"-1\"}";
+                    }
+                    index_discovers = serviceindexDiscover.fuzzyQuery("", content);
+                    if (index_discovers == null || index_discovers.size() <= 0) {
+                        return "{\"Message\": \"0\"}";
+                    }
+//                return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+                    //return JSON.toJSONString(serviceindexDiscover.fuzzyQuery("", content));
+                }
+        }
+/*
+        //如果搜索的内容中包含在Talking中
+        for (int i = 0; i < types.size(); i++) {
+            if (types.get(i).getSchooltypename().contains(content)) {
+                //对搜索类型进行模糊查询
+                history.setHistorysearch(content);
+                UserInfo userinfo = new UserInfo();
+                userinfo.setUserid(Integer.valueOf(userId));
+                history.setUserinfo(userinfo);
+                Boolean aBoolean = historyService.addHistory(history);
+                if (!aBoolean) {
+                    return "{\"Message\": \"-1\"}";
+                }
+                index_discovers = serviceindexDiscover.fuzzyQuery("", content);
+                if (index_discovers == null || index_discovers.size() <= 0) {
+                    return "{\"Message\": \"0\"}";
+                }
+//                return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+                //return JSON.toJSONString(serviceindexDiscover.fuzzyQuery("", content));
+            } else {
+                //对发布的说说的内容进行模糊查询
+                history.setHistorysearch(content);
+                UserInfo userinfo = new UserInfo();
+                userinfo.setUserid(Integer.valueOf(userId));
+                history.setUserinfo(userinfo);
+//              historyService.addHistory(history);
+                Boolean aBoolean = historyService.addHistory(history);
+                if (!aBoolean) {
+                    return "{\"Message\": \"-1\"}";
+                }
+                index_discovers = serviceindexDiscover.fuzzyQuery(content, "");
+                if (index_discovers == null || index_discovers.size() <= 0) {
+                    return "{\"Message\": \"0\"}";
+                }
+                //  return JSON.toJSONString(serviceindexDiscover.fuzzyQuery(content, ""));
+            }*/
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+    }
+
+    @Transactional
+    @RequestMapping(value = "addIndexDiscover", method = RequestMethod.POST)
+    @ApiOperation(value = "便签操作:新增便签(新增成功后会增加300积分)", notes = "便签操作:新增便签(新增成功" +
+            "后会增加300积分) message 0=>新增失败 1 提交成功 -1捕捉到异常" +
+            " -2选择文件为空 -3增加积分失败  -4变更会员状态失败 -5没有查询到数据  -6=>捕捉异常  -7=>更新便签数出错")
+    public String addIndexDiscover(@ApiParam("用户id") @RequestParam("userid") String userid,
+                                   @ApiParam("便签内容") @RequestParam("content") String content,
+                                   @ApiParam("发布的图片1") @RequestParam(value = "picurl", required = false) MultipartFile image,
+                                   @ApiParam("发布的图片2") @RequestParam(value = "picurls", required = false) MultipartFile images,
+                                   @ApiParam("发布的图片3") @RequestParam(value = "picurlt", required = false) MultipartFile imaget,
+                                   @ApiParam("发布的图片4") @RequestParam(value = "picurlf", required = false) MultipartFile imagef,
+                                   @ApiParam("发布便签的地址经度") @RequestParam(value = "Longitude", required = false) String Longitude,
+                                   @ApiParam("发布便签的地址纬度") @RequestParam(value = "Latitude", required = false) String Latitude,
+                                   @ApiParam("@谁") @RequestParam(value = "remindPreson", required = false) String remindPreson,
+                                   @ApiParam("当前地址名称") @RequestParam(value = "currentLocation", required = false) String currentLocation,
+                                   @ApiParam("所属话题id") @RequestParam(value = "talkingID", required = false) String talkingID) {
+       try {
+           MultipartFile[] multipartFiles = {image, images, imaget, imagef};
+           String[] multipartFileToString = {"image", "images", "imaget", "imagef" };
+           String[] uploadUrls = new String[multipartFiles.length];
+           Map<String, Object> map = new HashMap<String, Object>();
+           try {
+               for (int i = 0; i < multipartFiles.length; i++) {
+                   if (multipartFiles[i] != null) {
+                       String filename = multipartFiles[i].getOriginalFilename();
+                       if (!"".equals(filename.trim())) {
+                           String substr = filename.substring(filename.lastIndexOf(".") + 1);
+                           //重新定义文件名
+                           String newName = RandomNumberUtil.randomnumberEnglish(8);
+//                        String newName = Math.random()*1000000 +"."+ substr;
+
+                           File newFile = new File(newName);
+                           FileOutputStream os = new FileOutputStream(newFile);
+                           os.write(multipartFiles[i].getBytes());
+                           os.close();
+                           multipartFiles[i].transferTo(newFile);
+                           //上传到OSS  //uploadUrl文件全路径存放到对应的数据库表中
+                           String uploadUrl = AliyunOSSUpLoadUtil.upLoad(newFile, AliyunOssParameter.FILE_HOST_NOTE, userid);
+                           if (uploadUrl == null || uploadUrl == "") {
+                               return "{\"Message\":\"0\"}";
+                           }
+                           uploadUrls[i] = uploadUrl;//把图片路径提取出来
+                           map.put(multipartFileToString[i], uploadUrl);//存入对应数据库的map
+                           File file1 = new File("");
+                           String s = file1.getAbsolutePath();
+                           LocalDelete.delete(s + "\\" + filename);// 删除上传的文件  上传成功后会在项目根目录存在一张图片
+                       }
+                   } else {
+                       map.put(multipartFileToString[i], null);//存入对应数据库的map
+                   }
+               }
+               map.put("userid", userid);
+               map.put("content", content);
+               map.put("createTime", DateUtils.newDateTime());
+               map.put("Latitude", Double.valueOf(Latitude));
+               map.put("Longitude", Double.valueOf(Longitude));
+               map.put("remindpreson", remindPreson);
+               map.put("talkingID", talkingID);
+               map.put("currentLocation", currentLocation);
+               //默认为null
+               map.put("favoCount", 0);
+               map.put("CommentID", null);
+               map.put("favoStatus", null);
+               map.put("schooltypename", null);
+               map.put("commentCount", 0);
+               map.put("collectCount", 0);
+
+               if (serviceindexDiscover.addIndexDiscover(map) <= 0) {
+                   return "{\"Message\": \"0\"}";
+               }
+           } catch (Exception ex) {
+               logger.error(ex.getMessage());
+               return "{\"Message\":\"-1\"}";
+           }
+           //发布成功后自己本身的NoteNumber+1
+           UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+           userInfo.setNoteNumber(userInfo.getNoteNumber() + 1);
+           int i1 = userUpdateService.updateNoteNumber(userInfo);
+           if (i1 != 1) {
+               return "{\"Message\":\"-7\"}";
+           }
+
+           //判定是有效便签成功后增加积分
+           if (content != null && content.length() >= 200 && multipartFiles.length >= 3 && talkingID!=null && talkingID != "") {
+               List<scorechange> scorechanges = scorechangeService.selectLastByUserid(userid);//增加积分
+               Map<String, Object> maps = new HashMap<String, Object>();
+               maps.put("userid", userid);
+               maps.put("score", scorechanges.get(0).getScore() + 300);
+               maps.put("post", "发帖奖励");
+               maps.put("createtime", DateUtils.newDateTime());
+               maps.put("notecreatetime", map.get("createTime"));
+               maps.put("noteContent", map.get("content"));
+               int i = scorechangeService.addScorechange(maps);
+               if (i == 0) {
+                   return "{\"Message\":\"-3\"}";
+               }
+           }
+           List<scorechange> scorechanges = scorechangeService.selectLastByUserid(userid);
+           if (scorechanges == null || scorechanges.size() == 0) {
+               return "{\"Message\":\"-5\"}";
+           }
+           Integer s = scorechanges.get(0).getScore();
+           if (s >= 1000) {
+               int o = userUpdateService.updateVip(Integer.valueOf(userid));
+               if (o == 0) {
+                   return "{\"Message\":\"-4\"}";
+               }
+           }
+           //进行@谁推送
+           if (remindPreson != null || remindPreson != "") {
+               String[] split = remindPreson.split(",");
+               for (String s1 : split) {
+                   UserInfo userInfo1 = userUpdateService.selectUserInfoByUserId(s1);
+                   String alias = String.valueOf(userInfo1.getUserid());
+                   Map<String, String> parm = new HashMap<>();
+                   parm.put("msg", userInfo.getUsername() + "发布便签@了您");
+                   try {
+                       JPush.jpushIOS(parm, alias);
+                   } catch (Exception e) {
+                       logger.info(e.toString());
+                   }
+               }
+           }
+       }catch (Exception e){
+           return "{\"Message\":\"-1\"}";
+       }
+        return "{\"Message\":\"1\"}";
+    }
+
+    @RequestMapping(value = "selectAllIndexDiscover", method = RequestMethod.GET,produces = "text/json;charset=UTF-8")
+    @Transactional
+    @ApiOperation(value = "首页发现", notes = "首页发现 message 0=>新增失败 1 查询成功 -1=>改变收藏数量失败 =>-2查询失败")
+    public String selectAllIndexDiscover() {
+        List<index_discover> index_discovers = serviceindexDiscover.selectAll();
+        if (index_discovers == null || index_discovers.size() <= 0) {
+            return "{\"Message\":\"0\"}";
+        }else{
+            for(int i = 0;i<index_discovers.size();i++){
+                UserInfo userInfo = userUpdateService.selectUserInfoByUserId(index_discovers.get(i).getUserid());
+                if(userInfo==null){
+                    return "{\"Message\":\"-2\"}";
+                }
+                index_discovers.get(i).setUserinfo(userInfo);
+            }
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+    }
+
+   /* //便签收藏
+    @Transactional
+    @RequestMapping(value = "CollectionIndexDiscover", method = RequestMethod.GET)
+    @ApiOperation(value = "便签收藏", notes = "便签收藏 message 0=>新增收藏失败 1 查询成功  -1=>已经收藏过")
+    public String CollectionIndexDiscover(@ApiParam("用户id") @RequestParam("userid") String userid,
+                                          @ApiParam("便签id") @RequestParam("templateID") String templateID) {
+        Map<String,Object> map = new HashMap<String,Object>();
+        List<Collection> collections = collectionService.selectMyCollection(userid);
+        //没有查询到收藏信息
+        if(collections==null||collections.size()==0){
+            map.put("userid",userid);
+            map.put("Noteid",templateID);
+            map.put("Collectiontime",new Date());
+            int i = collectionService.addCollection(map);
+            if(i==0){
+                return  "{\"Message\",\"0\"}";
+            }
+            //改变便签的收藏记录
+            index_discover index_discover = serviceindexDiscover.oneTemplate(templateID);
+            index_discover.setCollectcount(index_discover.getCollectcount()+1);
+            Boolean aBoolean = serviceindexDiscover.changeCollectCount(index_discover);
+            if(!aBoolean){
+                return  "{\"Message\",\"-1\"}";
+            }
+        }
+        return  "{\"Message\",\"1\"}";
+    }*/
+
+
+    //显示附近人的便签动态
+    @RequestMapping(value = "AllLocation", method = RequestMethod.GET)
+    @ApiOperation(value = "附近便签显示", notes = "附近便签显示 message 0=>查询失败 1 查询成功")
+    public String AllLocation(@ApiParam("便签所在纬度") @RequestParam("Latitude") String Latitude,
+                                          @ApiParam("便签所在经度") @RequestParam("Longitude") String Longitude){
+        double dLatitude = Double.parseDouble(Latitude);
+        double dLongitude = Double.parseDouble(Longitude);
+        List<index_discover> index_discovers = serviceindexDiscover.AllLocation(dLatitude, dLongitude);
+        if(index_discovers==null||index_discovers.size()==0){
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+    }
+
+    //显示点赞列表，获得点赞人头像，点赞推送消息，点赞时间,被点赞人便签图片
+    @RequestMapping(value = "Give", method = RequestMethod.GET)
+    @ApiOperation(value = "点赞列表显示", notes = "点赞列表显示 message 0=>查询失败 1 查询成功")
+    public String Give(@ApiParam("被点赞用户ID") @RequestParam("userinfoId") String userinfoId){
+        List<v_nice_detail> v_nice_detail = detailService.selectNiceDetailCount(userinfoId);
+        if(v_nice_detail==null||v_nice_detail.size()==0){
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(v_nice_detail) + "}";
+    }
+
+    /* 判断字符是否为汉字
+	 * @param c
+	 * @return
+             */
+    private static boolean isChinese(char c) {
+        Character.UnicodeBlock ub = Character.UnicodeBlock.of(c);
+        if (ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS || ub == Character.UnicodeBlock.CJK_COMPATIBILITY_IDEOGRAPHS
+                || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_A || ub == Character.UnicodeBlock.CJK_UNIFIED_IDEOGRAPHS_EXTENSION_B
+                || ub == Character.UnicodeBlock.CJK_SYMBOLS_AND_PUNCTUATION || ub == Character.UnicodeBlock.HALFWIDTH_AND_FULLWIDTH_FORMS
+                || ub == Character.UnicodeBlock.GENERAL_PUNCTUATION) {
+            return true;
+        }
+        return false;
+    }
+
+
+    @RequestMapping(value = "selectByUserid", method = RequestMethod.GET)
+    @ApiOperation(value = "根据userid查询便签内容", notes = "根据userid查询便签内容 message 0=>查询失败 1 查询成功")
+    public String selectByUserid(@ApiParam("用户ID") @RequestParam("userid") String userid){
+        List<index_discover> index_discovers = serviceindexDiscover.selectByUserid(userid);
+        if (index_discovers==null||index_discovers.size()<=0) {
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\", \"Data\":" + JSON.toJSONString(index_discovers) + "}";
+    }
+
+
+    @RequestMapping(value = "hideIsShow", method = RequestMethod.GET)
+    @ApiOperation(value = "是否在附近显示便签", notes = "是否在附近显示便签 message 0=>更新失败 1 更新成功")
+    public String hideIsShow(@ApiParam("用户ID") @RequestParam("userid") String userid,
+                                 @ApiParam("显示状态") @RequestParam("isshow") String isshow){
+        int i = serviceindexDiscover.hideIsShow(userid, isshow);
+        if(i==0){
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\"}";
+    }
+
+    @RequestMapping(value = "randomIndexDiscover", method = RequestMethod.GET)
+    @ApiOperation(value = "随机推荐三个便签", notes = "随机推荐三个便签 message 0=>失败  1=>成功")
+    public String randomIndexDiscover(){
+        List<index_discover> index_discovers = serviceindexDiscover.randomIndexDiscover();
+        if(index_discovers==null||index_discovers.size()<=0){
+            return "{\"Message\": \"0\"}";
+        }
+        return "{\"Message\": \"1\",\"Data\":"+JSON.toJSONString(index_discovers)+"}";
+    }
+}

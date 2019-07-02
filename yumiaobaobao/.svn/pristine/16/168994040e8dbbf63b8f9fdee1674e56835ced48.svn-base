@@ -1,0 +1,44 @@
+package com.yumiaobaobao.app.schoolcourse.dao;
+
+import com.yumiaobaobao.app.schoolcourse.entity.SchoolCoures;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface SchoolCouresMapper {
+
+    /**
+     * 查询课程
+     */
+    @Select("select * from school_coures where id = #{id}")
+    List<SchoolCoures> allSchoolCourse(@Param("id") Integer id);
+
+    /**
+     * 根据店铺id查询所有课程信息
+     */
+    @Select("select * from school_coures where belongShopid = #{belongShopid} ")
+    List<SchoolCoures> commendCourse(@Param("belongShopid") Integer belongShopid);
+
+    /**
+     * 相关课程推荐
+     */
+    @Select("select * from school_coures where classType = #{classType} and id not in (#{id}) order by rand() limit 10")
+    List<SchoolCoures> recommendCourse(Integer classType,Integer id);
+
+    /**
+     * 显示课程评论
+     */
+    @Select("select * from school_score where course_id = #{courseId}")
+    List<schoolscore> courseComment(Integer courseId);
+
+    /**
+     * 随机推荐10个课程
+     *
+     * @return
+     */
+    List<SchoolCoures> randomSchoolCourse();
+}

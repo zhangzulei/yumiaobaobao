@@ -1,0 +1,62 @@
+package com.yumiaobaobao.app.moremenu.mycollection.service.impl;
+
+import com.yumiaobaobao.app.moremenu.mycollection.dao.CollectionMapper;
+import com.yumiaobaobao.app.moremenu.mycollection.entity.Collection;
+import com.yumiaobaobao.app.moremenu.mycollection.service.CollectionService;
+import com.yumiaobaobao.app.user.entity.v_note;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+@Service
+public class CollectionServiceImpl implements CollectionService {
+
+    @Autowired
+    private CollectionMapper collectionMapper;
+
+    @Override
+    public List<Collection> selectMyCollection(String userId) {
+
+        return collectionMapper.selectMyCollection(userId);
+    }
+
+    @Override
+    public List<v_note> selectMyCollection1(String noteuserId) {
+        return collectionMapper.selectMyCollection1(noteuserId);
+    }
+
+    @Override
+    public int addCollection(Map map) {
+        return collectionMapper.addCollection(map);
+    }
+
+    @Override
+    public List<Map<String,Object>> selectByNoteid(List<String> list,String year) {
+        return collectionMapper.selectByNoteid(list,year);
+    }
+
+    @Override
+    public List<Map<String,Object>> selectYearByNoteid(List<String> list) {
+        return collectionMapper.selectYearByNoteid(list);
+    }
+
+    @Override
+    public List<Collection> selectCollectionByUseridAndNoteid(String userid, String noteid) {
+        return collectionMapper.selectCollectionByUseridAndNoteid(userid,noteid);
+    }
+
+    @Override
+    public List<Collection> selectCollectionByUserid(String userid) {
+        return collectionMapper.selectCollectionByUserid(userid);
+    }
+
+    @Override
+    public String countsFromControllor(String Noteid, String starttime, String endtime,String year) {
+        return collectionMapper.countsFromControllor(Noteid,starttime,endtime,year);
+    }
+}

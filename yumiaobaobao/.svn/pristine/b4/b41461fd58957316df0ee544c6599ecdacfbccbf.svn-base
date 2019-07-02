@@ -1,0 +1,32 @@
+package com.yumiaobaobao.app.globaltype.service;
+
+import com.yumiaobaobao.app.globaltype.entity.SchoolType;
+import com.yumiaobaobao.app.school_subject.entity.schoolsubject;
+
+import java.util.List;
+
+/**
+ * Created by WH on 2019/04/17.
+ */
+public interface SchoolTypeService {
+
+
+
+    /**
+     * 行业类别展示主类
+     * @param fatherid
+     * @return
+     */
+    List<SchoolType> faterfindAll(String fatherid);
+
+
+    /**
+     * 查询所有一级类目
+     * @return
+     */
+    List<SchoolType>selectSchoolAllType();
+
+    List<SchoolType> allTypeName();
+
+    List<schoolsubject> findByFatherId(Integer fatherid);
+}

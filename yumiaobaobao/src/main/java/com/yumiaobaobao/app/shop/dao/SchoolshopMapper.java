@@ -1,0 +1,34 @@
+package com.yumiaobaobao.app.shop.dao;
+
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by Administrator on 2019.05.28.
+ */
+@Repository
+public interface SchoolshopMapper {
+
+    /**
+     * 课程店铺高级筛选
+     * @param schoolshop
+     * @return
+     */
+    List<Schoolshop> selectAllShop(Schoolshop schoolshop);
+
+    /**
+     * 根据课程类型查询店铺
+     * @param schoolshop
+     * @return
+     */
+    List<Schoolshop> selectClassType(Schoolshop schoolshop);
+
+    //更新店铺的平均评分
+    @Update("update school_shop set avgscore = #{map.du},qualityscore = #{map.sq},surroundingsscore = #{map.ss},Popularityscore = #{map.ps} where id = #{shopid}")
+    int updateAvgScoreByShopid(@Param("shopid")String shopid,@Param("map") Map map);
+}

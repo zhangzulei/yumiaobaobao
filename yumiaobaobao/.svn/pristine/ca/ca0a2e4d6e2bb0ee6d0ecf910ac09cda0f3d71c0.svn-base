@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.yumiaobaobao.app.schoolcourse.dao.SchoolCouresMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.schoolcourse.entity.SchoolCoures">
+        <id column="id" jdbcType="INTEGER" property="id"/>
+        <result column="schoolcourseId" jdbcType="INTEGER" property="schoolcourseid"/>
+        <result column="schoolcourseName" jdbcType="VARCHAR" property="schoolcoursename"/>
+        <result column="schoolcourseIntroduction" jdbcType="VARCHAR" property="schoolcourseintroduction"/>
+        <result column="Originalprice" jdbcType="VARCHAR" property="originalprice"/>
+        <result column="Currentprice" jdbcType="VARCHAR" property="currentprice"/>
+        <result column="classdate" jdbcType="DATE" property="classdate"/>
+        <result column="casstime" jdbcType="TIME" property="casstime"/>
+        <result column="AfterClassDate" jdbcType="DATE" property="afterclassdate"/>
+        <result column="AfterClasstime" jdbcType="TIME" property="afterclasstime"/>
+        <result column="learningTarget" jdbcType="VARCHAR" property="learningtarget"/>
+        <result column="byCollection" jdbcType="INTEGER" property="bycollection"/>
+        <result column="isPopular" jdbcType="INTEGER" property="ispopular"/>
+        <result column="isRecommend" jdbcType="INTEGER" property="isrecommend"/>
+        <result column="imgTextinfo" jdbcType="VARCHAR" property="imgtextinfo"/>
+        <result column="Packagedetails" jdbcType="VARCHAR" property="packagedetails"/>
+        <result column="classType" jdbcType="INTEGER" property="classtype"/>
+        <result column="belongShopid" jdbcType="INTEGER" property="belongshopid"/>
+        <result column="lft" jdbcType="INTEGER" property="lft"/>
+        <result column="rgt" jdbcType="INTEGER" property="rgt"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+    </resultMap>
+
+    <select id="randomSchoolCourse" resultType="com.yumiaobaobao.app.schoolcourse.entity.SchoolCoures">
+   select * from school_coures order by rand() limit 10
+  </select>
+
+
+
+
+</mapper>

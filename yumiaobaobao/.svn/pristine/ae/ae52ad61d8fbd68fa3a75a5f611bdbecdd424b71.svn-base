@@ -1,0 +1,23 @@
+package com.yumiaobaobao.app.gardener.service.impl;
+
+import com.yumiaobaobao.app.gardener.entity.gardenerUserInfo;
+import com.yumiaobaobao.app.gardener.service.ServiceGardener;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.util.List;
+
+/**
+ * Created by WH on 2019/03/26.
+ */
+
+@Service
+public class ServiceGardenerImpl implements ServiceGardener {
+
+    @Autowired
+    private com.yumiaobaobao.app.gardener.dao.gardenerMapper gardenerMapper;
+    @Override
+    public List<gardenerUserInfo> selectAll(String userid) {
+        return gardenerMapper.selectAll(userid);
+    }
+}

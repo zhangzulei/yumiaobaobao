@@ -1,0 +1,109 @@
+package com.yumiaobaobao.app.user.comment.service.impl;
+
+
+import com.yumiaobaobao.app.user.comment.service.Serviceindex_discover;
+import com.yumiaobaobao.app.user.dao.index_discoverMapper;
+import com.yumiaobaobao.app.user.entity.index_discover;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Isolation;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+@Service
+public class Index_diacoverServiceImpl implements Serviceindex_discover {
+
+    @Autowired
+    private index_discoverMapper index_discovermapper;
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public List<index_discover> alltemplate(String nainiuaccoent) {
+        return index_discovermapper.alltemplate(nainiuaccoent);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS, readOnly = true)
+    public index_discover searchContent(String content) {
+        return index_discovermapper.searchContent(content);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED, isolation = Isolation.DEFAULT, rollbackFor = Exception.class)
+    public Boolean changeFavo(index_discover index_discover) {
+        return index_discovermapper.changeFavo(index_discover);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public List<index_discover> notagsAll() {
+        return index_discovermapper.notagsAll();
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public List<index_discover> AllLocation(Double Latitude, Double Longitude,int pagenum,int pagesize) {
+        return index_discovermapper.AllLocation(Latitude,Longitude,pagenum,pagesize);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public index_discover oneTemplate(String templateID) {
+        return index_discovermapper.oneTemplate(templateID);
+    }
+
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public List<index_discover> fuzzyQuery(String content) {
+        return index_discovermapper.fuzzyQuery(content);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,rollbackFor = Exception.class)
+    public Boolean changecommentCount(index_discover index_discover) {
+        return index_discovermapper.changecommentCount(index_discover);
+    }
+
+    @Transactional(propagation = Propagation.REQUIRED,isolation = Isolation.DEFAULT,rollbackFor = Exception.class)
+    public Boolean changeCollectCount(index_discover index_discover) {
+        return index_discovermapper.changeCollectCount(index_discover);
+    }
+
+    @Override
+    public int addIndexDiscover(Map<String, Object> map) {
+        return index_discovermapper.addIndexDiscover(map);
+    }
+
+    @Override
+    public List<index_discover> selectAll(int pagenum,int pagesize) {
+        return index_discovermapper.selectAll(pagenum,pagesize);
+    }
+
+    @Override
+    public List<index_discover> selectByUseridLast(Integer userid) {
+        return index_discovermapper.selectByUseridLast(userid);
+    }
+
+
+    @Override
+    public index_discover selectCollection(Integer Noteid) {
+        return index_discovermapper.selectCollection(Noteid);
+    }
+
+
+
+    @Override
+    public List<index_discover> recommendNotes(Integer talkingid) {
+        return index_discovermapper.recommendNotes(talkingid);
+    }
+
+    @Override
+    public List<index_discover> selectByUserid(String userid) {
+        return index_discovermapper.selectByUserid(userid);
+    }
+
+    @Override
+    public int hideIsShow(String userid,String isshow) {
+        return index_discovermapper.hideIsShow(userid,isshow);
+    }
+
+    @Override
+    public List<index_discover> randomIndexDiscover() {
+        return index_discovermapper.randomIndexDiscover();
+    }
+}

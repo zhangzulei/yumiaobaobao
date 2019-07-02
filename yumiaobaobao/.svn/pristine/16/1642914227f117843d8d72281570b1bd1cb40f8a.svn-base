@@ -1,0 +1,108 @@
+package com.yumiaobaobao.app.user.search.controllor;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.common.utils.util.RandomNumberUtil;
+import com.yumiaobaobao.app.user.comment.service.Serviceindex_discover;
+import com.yumiaobaobao.app.user.entity.index_discover;
+import com.yumiaobaobao.app.user.entity.user_comment;
+import com.yumiaobaobao.app.user.like.service.Nice_CommentService;
+import com.yumiaobaobao.app.user.search.service.ServiceComment;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+@Api(tags = "无用")
+@Slf4j
+@RestController
+public class CommentController {
+    @Autowired
+    private ServiceComment serviceComment;
+    @Autowired
+    private Nice_CommentService commentService;
+    @Autowired
+    private Serviceindex_discover serviceindexDiscover;
+
+    @GetMapping("/allcomment")
+    @ApiOperation(value = "所有评论", notes = "所有评论")
+    public String allComment() {
+        return JSON.toJSONString(serviceComment.allcomment());
+    }
+
+
+//    public Boolean changeCommentFavocount(Long favocount, Integer favoStatus, String commentid) {
+//        user_comment userComment = new user_comment();
+//        if (favoStatus == 0) {
+//            userComment.setCommentid(commentid);
+//            userComment.setFavocount(++favocount);
+//            userComment.setFavostatus(favoStatus);
+//            return serviceComment.updateFavoCount(userComment);
+//        } else
+//            userComment.setCommentid(commentid);
+//            userComment.setFavocount(--favocount);
+//            userComment.setFavostatus(favoStatus);
+//        return serviceComment.updateFavoCount(userComment);
+//    }
+
+    @GetMapping(value = "/changeFavocount")
+    @ApiOperation(value = "根据状态获得点赞数", notes = "状态对点赞数进行加减")
+    public synchronized Long changeCommentFavocount(String userId,String commentId) {
+     /*   nice_comment niceComment = new nice_comment();
+        niceComment.setCommentid(commentId);
+        niceComment.setUserid(userId);
+        nice_comment niceComment1 = serviceComment.addComment(niceComment);
+        Long result=0l;
+        if(null!=niceComment1){
+
+            log.info("得到该条点赞评论记录"+":"+niceComment1);
+            //如果有该条记录则删除
+            commentService.deleteNiceComment(niceComment1.getId());
+            //根据评论ID获得整条评论信息
+            user_comment userComment = serviceComment.oneComment(commentId);
+            userComment.setFavocount(userComment.getFavocount()-1);
+            result = userComment.getFavocount();
+            //更新评论数量
+            serviceComment.updateFavoCount(userComment);
+            log.info("减过的评论数量为:"+":"+result);
+        }else {
+            //当记录为空
+            log.info("没有点赞记录");
+            nice_comment nicecomment = new nice_comment();
+            nicecomment.setUserid(userId);
+            nicecomment.setCommentid(commentId);
+            //增加评论点赞记录
+            commentService.addNiceComment(nicecomment);
+            user_comment userComment = serviceComment.oneComment(commentId);
+            userComment.setFavocount(userComment.getFavocount()+1);
+            result = userComment.getFavocount();
+            //更新点赞数量
+            serviceComment.updateFavoCount(userComment);
+            log.info("加过的点赞数量为"+":"+result);
+        }*/
+        //返回结果值
+        return  null;
+    }
+
+    @ApiOperation(value = "添加评论",notes = "用户评论说说内容")
+    @GetMapping("/addcomment")
+    public synchronized Boolean addComment(String content,String userId,String templateId){
+        user_comment userComment = new user_comment();
+        userComment.setCommentid(RandomNumberUtil.UUIDUtils.getUUID());
+        userComment.setCommentcontent(content);
+        userComment.setUserid(userId);
+        index_discover indexDiscover = new index_discover();
+        indexDiscover.setNoteid(Integer.valueOf(templateId));
+        userComment.setIndex_discover(indexDiscover);
+        //根据说说ID获得说说中的评论数量，来进行加1操作
+        index_discover discover = serviceindexDiscover.oneTemplate(templateId);
+        discover.setCommentcount(discover.getCommentcount()+1);
+        Long result = discover.getCommentcount();
+        log.info("评论的数量为"+":"+result);
+        serviceindexDiscover.changecommentCount(discover);
+        Boolean rt = serviceComment.addComment(userComment);
+        return rt;
+    }
+
+}

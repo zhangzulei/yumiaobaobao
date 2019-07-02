@@ -1,0 +1,256 @@
+package com.yumiaobaobao.app.gardener.controller;
+
+import com.alibaba.fastjson.JSON;
+import com.yumiaobaobao.app.gardener.entity.gardenerUserInfo;
+import com.yumiaobaobao.app.gardener.service.ServiceGardener;
+import com.yumiaobaobao.app.moremenu.mycollection.service.CollectionService;
+import com.yumiaobaobao.app.user.comment.service.Serviceindex_discover;
+import com.yumiaobaobao.app.user.entity.UserInfo;
+import com.yumiaobaobao.app.user.userupdate.service.UserUpdateService;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
+import io.swagger.annotations.ApiParam;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestMethod;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+
+/**
+ * Created by WH on 2019/03/26.
+ */
+
+@RestController
+@Component
+@Api(tags = "小圆丁操作：1.无参/有参查询小圆丁信息 2.绑定小园丁 3.小园丁数据统计")
+public class ControllerGardener {
+
+
+    @Autowired
+    private ServiceGardener serviceGardener;
+    @Autowired
+    private UserUpdateService userUpdateService;
+    @Autowired
+    private com.yumiaobaobao.app.moremenu.myattention.personal.service.UserFollowService userFollowService;
+    @Autowired
+    private Serviceindex_discover serviceindex_discover;
+    @Autowired
+    private CollectionService collectionService;
+    @Autowired
+    private com.yumiaobaobao.app.user.like.service.Nice_DetailService niceDetailService;
+    @Autowired
+    private com.yumiaobaobao.app.shop.shopupdate.service.ShopUpdateService shopUpdateService;
+
+
+    @RequestMapping(value = "selectAll", method = RequestMethod.GET)
+    @ApiOperation(value = "无参/有参查询小圆丁信息", notes = "无参/有参查询所有小园丁信息  Message 0  无信息")
+    public String selectAll(
+            @ApiParam("根据用户ID查询该园丁信息 可以为空") @RequestParam(value = "userid", required = false) String userid
+    ) {
+        List<gardenerUserInfo> list = serviceGardener.selectAll(userid);
+        if (list == null || list.size() == 0) {
+            return "{\"Message\": \"0\"}";
+        }
+        return JSON.toJSONString(list);
+    }
+
+    @RequestMapping(value = "updateGarder", method = RequestMethod.GET)
+    @ApiOperation(value = "绑定小园丁", notes = "无参/有参查询所有小园丁信息  Message 0  没有用户存在  =>1成功" +
+            "=>-1没有个人认证,不能绑定 =>-2该商铺不存在  -3=>添加失败")
+    public String updateGarder(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid,
+            @ApiParam("店铺名称") @RequestParam(value = "shopname") String shopname,
+            @ApiParam("申请备注") @RequestParam(value = "ps",required = false) String ps
+    ) {
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        userInfo.setCreatetime(new Date());
+        userInfo.setPs(ps);
+        return "{\"Message\":\"1\"}";
+    }
+
+
+    @RequestMapping(value = "MonthByFollow", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被关注/点赞（按月/年查看）", notes = "小园丁被关注/点赞（按月/年查看）  Message 0  无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看 =>-2查询信息失败     type== 1.被关注（月） 2.被关注（年） 3.被点赞（月） 4.被点赞（年） ")
+    public String MonthByFollow(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid,
+            @ApiParam("查询年份") @RequestParam(value = "year") String year,
+            @ApiParam("类型") @RequestParam(value = "type") String type) {
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        if (type.equals("1")) {
+            List<Map<String, Object>> maps = userFollowService.MonthByFollow(userid, year);
+            if(maps==null||maps.size()<=0){
+                return "{\"Message\":\"-2\"}";
+            }
+            return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(maps)+"}";
+        }
+       else if(type.equals("2")){
+            List<Map<String, Object>> maps = userFollowService.YearByFollow(userid);
+            if(maps==null||maps.size()<=0){
+                return "{\"Message\":\"-2\"}";
+            }
+            return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(maps)+"}";
+        }
+       else if(type.equals("3")){
+            Map<String, Object> stringObjectMap = niceDetailService.countFavoAtMonth(userid,year);
+            if (stringObjectMap==null||stringObjectMap.size()<=0) {
+                return "{\"Message\":\"0\"}";
+            }
+            return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(stringObjectMap)+"}";
+        }else if(type.equals("4")){
+            Map<String, Object> stringObjectMap = niceDetailService.countFavoAtYear(userid);
+            if (stringObjectMap==null||stringObjectMap.size()<=0) {
+                return "{\"Message\":\"0\"}";
+            }
+            return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(stringObjectMap)+"}";
+        }
+        else{
+            return "{\"Message\":\"0\"}";
+        }
+    }
+
+   /* @RequestMapping(value = "YearByFollow", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被关注（按年查看）", notes = "小园丁被关注（按年查看）  Message 0  无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看 =>-2查询信息失败 ")
+    public String YearByFollow(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid) {
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        List<Map<String, Object>> maps = userFollowService.YearByFollow(userid);
+        if(maps==null||maps.size()<=0){
+            return "{\"Message\":\"-2\"}";
+        }
+        return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(maps)+"}";
+    }*/
+
+  /*  @RequestMapping(value = "MonthByCollection", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被收藏（按月查看）", notes = "小园丁被收藏（按月查看）  Message 0  查询无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看  ")
+    public String MonthByCollection(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid,
+            @ApiParam("查询指定年") @RequestParam(value = "year") String year){
+        List list = new ArrayList();
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        List<index_discover> index_discovers = serviceindex_discover.selectByUserid(userid);
+        if(index_discovers==null||index_discovers.size()<=0){
+            return "{\"Message\":\"0\"}";
+        }
+        //拿出便签的id
+        int count = 0;
+        int days = 1;
+        List<List<Map<String, Object>>> li = new ArrayList<List<Map<String, Object>>>();
+        Map<String,Object> param = new HashMap<String,Object>();
+        List<Map<String,Object>> listMap = new ArrayList<Map<String,Object>>();
+        for(index_discover i : index_discovers){
+            List<Map<String, Object>> maps = collectionService.countsFromControllor(String.valueOf(i.getNoteid()), year);
+            li.add(maps);
+        }
+        for ( List<Map<String, Object>> o : li) {
+            for (Map<String, Object> stringObjectMap : o) {
+                count+=Integer.parseInt(stringObjectMap.get(String.valueOf(days)).toString());
+                param.put(String.valueOf(days),count);
+                days++;
+            }
+        }
+        listMap.add(param);
+        return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(listMap)+"}";
+    }*/
+
+   /* @RequestMapping(value = "YearByCollection", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被收藏（按年查看）", notes = "小园丁被收藏（按年查看）  Message 0  查询无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看  ")
+    public String YearByCollection(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid){
+        List list = new ArrayList();
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        List<index_discover> index_discovers = serviceindex_discover.selectByUserid(userid);
+        if(index_discovers==null||index_discovers.size()<=0){
+            return "{\"Message\":\"0\"}";
+        }
+        //拿出便签的id
+        for(index_discover i : index_discovers){
+            list.add(i.getNoteid());
+        }
+        List list1 = collectionService.selectYearByNoteid(list);
+        if (list1==null||list1.size()<=0) {
+            return "{\"Message\":\"0\"}";
+        }
+        return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(list1)+"}";
+    }*/
+
+   /* @RequestMapping(value = "countFavoAtMonth", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被点赞（按月查看）", notes = "小园丁被点赞（按月查看）  Message 0  查询无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看  ")
+    public String countFavoAtMonth(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid,
+            @ApiParam("查询指定年") @RequestParam(value = "year") String year){
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        Map<String, Object> stringObjectMap = niceDetailService.countFavoAtMonth(userid,year);
+        if (stringObjectMap==null||stringObjectMap.size()<=0) {
+            return "{\"Message\":\"0\"}";
+        }
+        return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(stringObjectMap)+"}";
+    }
+
+    @RequestMapping(value = "countFavoAtYear", method = RequestMethod.GET)
+    @ApiOperation(value = "小园丁被点赞（按年查看）", notes = "小园丁被点赞（按年查看）  Message 0  查询无信息  =>1成功" +
+            "=>-1不是小园丁，无法查看  ")
+    public String countFavoAtYear(
+            @ApiParam("用户ID") @RequestParam(value = "userid") String userid){
+        UserInfo userInfo = userUpdateService.selectUserInfoByUserId(userid);
+        if (userInfo==null) {
+            return "{\"Message\":\"0\"}";
+        }
+        Integer isGarder = userInfo.getIsGarder();
+        if(isGarder!=1){
+            return "{\"Message\":\"-1\"}";
+        }
+        Map<String, Object> stringObjectMap = niceDetailService.countFavoAtYear(userid);
+        if (stringObjectMap==null||stringObjectMap.size()<=0) {
+            return "{\"Message\":\"0\"}";
+        }
+        return "{\"Message\":\"1\",\"Data\":"+JSON.toJSONString(stringObjectMap)+"}";
+    }*/
+
+
+}

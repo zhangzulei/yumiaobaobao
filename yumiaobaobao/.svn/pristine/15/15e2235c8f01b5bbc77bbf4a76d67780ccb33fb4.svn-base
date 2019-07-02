@@ -1,0 +1,81 @@
+package com.yumiaobaobao.app.taiking.taikingupdate.service.impl;
+
+import com.yumiaobaobao.app.common.utils.util.DateUtils;
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import com.yumiaobaobao.app.taiking.dao.TaiKingMapper;
+import com.yumiaobaobao.app.taiking.entity.talking;
+import com.yumiaobaobao.app.taiking.taikingupdate.service.TaiKingUpdateService;
+import com.yumiaobaobao.app.user.dao.user_favoMapper;
+import com.yumiaobaobao.app.user.entity.index_discover;
+import com.yumiaobaobao.app.user.entity.user_favo;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+@Service
+public class TaiKingUpdateServiceImpl implements TaiKingUpdateService{
+
+    @Autowired
+    private TaiKingMapper taiKingMapper;
+    @Autowired
+    private user_favoMapper user_favoMappers;
+
+    @Override
+    public int addTalKing(Map<String, Object> map) {
+        map.put("talkingDatetime", DateUtils.newDateTime());
+        return taiKingMapper.addtalking(map);
+    }
+
+    @Override
+    @Transactional(propagation = Propagation.SUPPORTS,readOnly = true)
+    public List<user_favo> confirmShow(String userId) {
+        return user_favoMappers.confirmShow(userId);
+    }
+
+    @Override
+    public List<index_discover> selectHoeTalking(String talkingid) {
+        return taiKingMapper.selectHoeTalking(talkingid);
+    }
+
+    @Override
+    public List<talking> maytalking(int userid) {
+        return taiKingMapper.maytalking(userid);
+    }
+
+    @Override
+    public List<index_discover> selectNewTalking(String talkingid) {
+        return taiKingMapper.selectNewTalking(talkingid);
+    }
+
+    @Override
+    public List<talking> selectById(String talkingId) {
+        return taiKingMapper.selectById(talkingId);
+    }
+
+    @Override
+    public List<talking> recommendtalking() {
+        return taiKingMapper.recommendtalking();
+    }
+
+    @Override
+    public List<Schoolshop> recommendShop() {
+        return taiKingMapper.recommendShop();
+    }
+
+    @Override
+    public List<talking> allTalking() {
+        return taiKingMapper.allTalking();
+    }
+
+    @Override
+    public int updateTalking(Map map) {
+        return taiKingMapper.updateTalking(map);
+    }
+}

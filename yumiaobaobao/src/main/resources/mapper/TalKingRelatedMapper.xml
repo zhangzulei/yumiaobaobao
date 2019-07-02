@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.taiking.dao.TaiKingMapper" >
+
+
+    <!--根据专题id查询专题信息-->
+    <select id="bytalkingidselectTalking" resultType="com.yumiaobaobao.app.taiking.entity.talking" parameterType="list">
+      SELECT * FROM talking WHERE talking.talkingid IN
+      <foreach collection="list" index="index" separator="," close=")" open="(" item="item">
+        #{item}
+      </foreach>
+    </select>
+</mapper>

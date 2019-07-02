@@ -1,0 +1,187 @@
+package com.yumiaobaobao.app.schoolcourse.entity;
+
+import java.util.Date;
+
+
+public class schoolcourse {
+
+    private Integer id;
+
+    private  Integer schoolcourseId;
+
+    private String schoolcourseName;
+
+    private  String schoolcourseIntroduction;
+
+    private  String Originalprice;
+
+    private  String Currentprice;
+
+    private Date classdate;
+
+    private  Date casstime;
+
+    private  Date AfterClassDate;
+
+    private  Date AfterClasstime;
+
+    private  String learningTarget;
+
+    private  Integer byCollection;
+
+    private  Integer isPopular;
+
+    private Integer isRecommend;
+
+    private  String imgTextinfo;
+
+    private String Packagedetails;
+
+    private  Integer classType;
+
+    private  Integer belongShopid;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getSchoolcourseId() {
+        return schoolcourseId;
+    }
+
+    public void setSchoolcourseId(Integer schoolcourseId) {
+        this.schoolcourseId = schoolcourseId;
+    }
+
+    public String getSchoolcourseName() {
+        return schoolcourseName;
+    }
+
+    public void setSchoolcourseName(String schoolcourseName) {
+        this.schoolcourseName = schoolcourseName;
+    }
+
+    public String getSchoolcourseIntroduction() {
+        return schoolcourseIntroduction;
+    }
+
+    public void setSchoolcourseIntroduction(String schoolcourseIntroduction) {
+        this.schoolcourseIntroduction = schoolcourseIntroduction;
+    }
+
+    public String getOriginalprice() {
+        return Originalprice;
+    }
+
+    public void setOriginalprice(String originalprice) {
+        Originalprice = originalprice;
+    }
+
+    public String getCurrentprice() {
+        return Currentprice;
+    }
+
+    public void setCurrentprice(String currentprice) {
+        Currentprice = currentprice;
+    }
+
+    public Date getClassdate() {
+        return classdate;
+    }
+
+    public void setClassdate(Date classdate) {
+        this.classdate = classdate;
+    }
+
+    public Date getCasstime() {
+        return casstime;
+    }
+
+    public void setCasstime(Date casstime) {
+        this.casstime = casstime;
+    }
+
+    public Date getAfterClassDate() {
+        return AfterClassDate;
+    }
+
+    public void setAfterClassDate(Date afterClassDate) {
+        AfterClassDate = afterClassDate;
+    }
+
+    public Date getAfterClasstime() {
+        return AfterClasstime;
+    }
+
+    public void setAfterClasstime(Date afterClasstime) {
+        AfterClasstime = afterClasstime;
+    }
+
+    public String getLearningTarget() {
+        return learningTarget;
+    }
+
+    public void setLearningTarget(String learningTarget) {
+        this.learningTarget = learningTarget;
+    }
+
+    public Integer getByCollection() {
+        return byCollection;
+    }
+
+    public void setByCollection(Integer byCollection) {
+        this.byCollection = byCollection;
+    }
+
+    public Integer getIsPopular() {
+        return isPopular;
+    }
+
+    public void setIsPopular(Integer isPopular) {
+        this.isPopular = isPopular;
+    }
+
+    public Integer getIsRecommend() {
+        return isRecommend;
+    }
+
+    public void setIsRecommend(Integer isRecommend) {
+        this.isRecommend = isRecommend;
+    }
+
+    public String getImgTextinfo() {
+        return imgTextinfo;
+    }
+
+    public void setImgTextinfo(String imgTextinfo) {
+        this.imgTextinfo = imgTextinfo;
+    }
+
+    public String getPackagedetails() {
+        return Packagedetails;
+    }
+
+    public void setPackagedetails(String packagedetails) {
+        Packagedetails = packagedetails;
+    }
+
+    public Integer getClassType() {
+        return classType;
+    }
+
+    public void setClassType(Integer classType) {
+        this.classType = classType;
+    }
+
+    public Integer getBelongShopid() {
+        return belongShopid;
+    }
+
+    public void setBelongShopid(Integer belongShopid) {
+        this.belongShopid = belongShopid;
+    }
+}

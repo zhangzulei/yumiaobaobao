@@ -1,0 +1,11 @@
+package com.yumiaobaobao.app.shop.shophone.service;
+
+import java.util.List;
+import java.util.Map;
+
+public interface school_shop_scoreService {
+
+    int addShopScore(Map map);
+
+    List<String> selectAvgScore(String shopid);
+}

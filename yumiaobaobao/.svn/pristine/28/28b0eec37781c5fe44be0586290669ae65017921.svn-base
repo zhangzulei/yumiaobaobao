@@ -1,0 +1,36 @@
+package com.yumiaobaobao.app.schoolcourse.service;
+
+import com.yumiaobaobao.app.schoolcourse.entity.schoolcourse;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+
+import java.util.List;
+
+
+public interface schoolcourseService {
+
+    /**
+     *  查询课程
+     * */
+    List<schoolcourse> allSchoolCourse(Integer id);
+
+    /**
+     * 该商户的其他课程推荐
+     * */
+    List<schoolcourse> commendCourse(Integer belongShopid);
+
+    /**
+     * 显示课程评论
+     * */
+    List<schoolscore> allDiscuss(Integer course_id);
+
+    /**
+     * 相关课程推荐
+     * */
+    public List<schoolcourse> recommendCourse(Integer classType);
+
+    /**
+     * 随机获取10条课程
+     * @return
+     */
+    List<schoolcourse> randomSchoolCourse();
+}

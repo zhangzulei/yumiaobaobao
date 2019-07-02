@@ -1,0 +1,33 @@
+package com.yumiaobaobao.app.taiking.taikingupdate.service;
+
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import com.yumiaobaobao.app.taiking.entity.TaiKing;
+import com.yumiaobaobao.app.user.entity.user_favo;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+public interface TaiKingUpdateService {
+
+    /**
+     * 发布新专题
+     */
+    int addTalKing(Map<String, Object> map);
+
+    List<user_favo> confirmShow(String userId);
+
+    List<TaiKing> maytalking( int userid);
+
+    List<TaiKing> selectHoeTalking();
+
+    List<TaiKing> selectNewTalking();
+
+    List<TaiKing> selectById(String talkingId);
+
+    List<TaiKing> recommendtalking();
+
+    List<Schoolshop> recommendShop();
+}

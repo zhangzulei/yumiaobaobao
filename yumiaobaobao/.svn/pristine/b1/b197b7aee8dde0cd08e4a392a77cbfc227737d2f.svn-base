@@ -1,0 +1,37 @@
+package com.yumiaobaobao.app.schoolcourse.dao;
+
+import com.yumiaobaobao.app.schoolcourse.entity.schoolcourse;
+import com.yumiaobaobao.app.schoolscore.entity.schoolscore;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+
+@Repository
+public interface schoolcourseMapper {
+
+    /**
+     * 查询课程
+     * */
+    @Select("select * from school_course where id = #{id}")
+    List<schoolcourse> allSchoolCourse(@Param("id") Integer id);
+
+    /**
+     * 该商户的其他课程推荐
+     * */
+    @Select("select * from school_course where belongShopid = #{belongShopid} ")
+    List<schoolcourse> commendCourse(@Param("belongShopid")Integer belongShopid);
+
+    /**
+     * 相关课程推荐
+     * */
+    @Select("select * from school_course where classType = #{classType}")
+    List<schoolcourse> recommendCourse(Integer classType);
+
+    /**
+     * 显示课程评论
+     * */
+    @Select("select * from school_score where course_id = #{course_id}")
+    List<schoolscore> allDiscuss(Integer course_id);
+}

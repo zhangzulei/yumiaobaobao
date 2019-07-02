@@ -1,0 +1,105 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.yumiaobaobao.app.user.dao.user_favoMapper">
+    <resultMap id="BaseResultMap" type="com.yumiaobaobao.app.user.entity.user_favo">
+        <id column="ID" property="id" jdbcType="INTEGER"/>
+        <result column="userId" property="userid" jdbcType="VARCHAR"/>
+        <result column="fatherId" property="fatherid" jdbcType="INTEGER"/>
+        <result column="typeId" property="typeid" jdbcType="INTEGER"/>
+        <result column="chooseTime" property="choosetime" jdbcType="TIMESTAMP"/>
+    </resultMap>
+
+    <!--用户新增Talking-->
+    <insert id="addTags" parameterType="com.yumiaobaobao.app.user.entity.user_favo" useGeneratedKeys="true"
+            keyProperty="id">
+    insert into user_favo (fatherId,typeId,userId) values (#{fatherid},#{typeid},#{userinfo.userid})
+  </insert>
+    <!--根据用户ID来查找Talking信息-->
+    <select id="confirmShow" parameterType="java.lang.String" resultType="com.yumiaobaobao.app.user.entity.user_favo">
+    SELECT ID,userId,fatherId,typeId,chooseTime from user_favo where userId=#{userId}
+  </select>
+
+
+    <delete id="deleteByPrimaryKey" parameterType="java.lang.Integer">
+    delete from user_favo
+    where ID = #{id,jdbcType=INTEGER}
+  </delete>
+
+
+    <insert id="insert" parameterType="com.yumiaobaobao.app.user.entity.user_favo">
+    insert into user_favo (ID, userId, fatherId, 
+      typeId, chooseTime)
+    values (#{id,jdbcType=INTEGER}, #{userid,jdbcType=INTEGER}, #{fatherid,jdbcType=INTEGER}, 
+      #{typeid,jdbcType=INTEGER}, #{choosetime,jdbcType=TIMESTAMP})
+  </insert>
+
+
+    <insert id="insertSelective" parameterType="com.yumiaobaobao.app.user.entity.user_favo">
+        insert into user_favo
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="userid != null">
+                userId,
+            </if>
+            <if test="fatherid != null">
+                fatherId,
+            </if>
+            <if test="typeid != null">
+                typeId,
+            </if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="userid != null">
+                #{userid,jdbcType=INTEGER},
+            </if>
+            <if test="fatherid != null">
+                #{fatherid,jdbcType=INTEGER},
+            </if>
+            <if test="typeid != null">
+                #{typeid,jdbcType=INTEGER},
+            </if>
+        </trim>
+    </insert>
+
+
+    <update id="updateByPrimaryKeySelective" parameterType="com.yumiaobaobao.app.user.entity.user_favo">
+        update user_favo
+        <set>
+            <if test="userid != null">
+                userId = #{userid,jdbcType=INTEGER},
+            </if>
+            <if test="fatherid != null">
+                fatherId = #{fatherid,jdbcType=INTEGER},
+            </if>
+            <if test="typeid != null">
+                typeId = #{typeid,jdbcType=INTEGER},
+            </if>
+            <if test="choosetime != null">
+                chooseTime = #{choosetime,jdbcType=TIMESTAMP},
+            </if>
+        </set>
+        where ID = #{id,jdbcType=INTEGER}
+    </update>
+
+
+    <update id="updateByPrimaryKey" parameterType="com.yumiaobaobao.app.user.entity.user_favo">
+    update user_favo
+    set userId = #{userid,jdbcType=INTEGER},
+      fatherId = #{fatherid,jdbcType=INTEGER},
+      typeId = #{typeid,jdbcType=INTEGER},
+      chooseTime = #{choosetime,jdbcType=TIMESTAMP}
+    where ID = #{id,jdbcType=INTEGER}
+  </update>
+
+    <!--粉丝列表-->
+    <select id="selectfansList" resultType="com.yumiaobaobao.app.user.entity.UserInfo">
+        SELECT
+          a.*,
+          b.*
+        FROM
+          user_favo a,
+          user_info b
+        WHERE 1=1
+        and  a.userId =b.userId
+  </select>
+
+</mapper>

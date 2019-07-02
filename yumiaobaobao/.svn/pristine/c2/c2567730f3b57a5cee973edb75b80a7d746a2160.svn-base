@@ -1,0 +1,47 @@
+package com.yumiaobaobao.app.shop.shopupdate.service.impl;
+
+import com.yumiaobaobao.app.common.utils.util.ImgUtils;
+import com.yumiaobaobao.app.shop.dao.ShopRelateMapper;
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import com.yumiaobaobao.app.shop.shopupdate.service.ShopUpdateService;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+@Service
+public class ShopUpdateServiceImpl implements ShopUpdateService {
+
+    @Autowired
+    private ShopRelateMapper shopRelateMapper;
+    @Override
+    public int addShop(String shopName,int tradingArea,String schoolAddress, String schoolPhone, String schoolColl, String schoolOpenTime, String sendTime ) {
+        DateTimeFormatter df = DateTimeFormatter.ofPattern("HH:mm:ss");
+        LocalTime localSchoolOpenTime = LocalTime.parse(schoolOpenTime.trim(), df);
+        LocalTime localSendTime = LocalTime.parse(sendTime.trim(), df);
+        return shopRelateMapper.addShop(
+                shopName,
+                tradingArea,
+                schoolAddress,
+                schoolPhone,
+                schoolColl,
+                localSchoolOpenTime,
+                localSendTime,
+                ImgUtils.ShopInfo());
+    }
+
+    @Override
+    public int shopHeadImg(String imgFile,String shopId) {
+        return shopRelateMapper.shopHeadImg(imgFile,shopId);
+    }
+
+    @Override
+    public List<Schoolshop> selectByShopname(String schoolname) {
+        return shopRelateMapper.selectByShopName(schoolname);
+    }
+}

@@ -1,0 +1,162 @@
+package com.yumiaobaobao.app.schoolscore.entity;
+
+/**
+ * @Title 评分表
+ * 　* @author
+ * 　* @date 2019.05.24 14:08
+ *
+ */
+public class schoolscore {
+    /**
+     * 评分表id
+     */
+    private Integer id;
+
+    /**
+     * 评价该商品的用户id
+     */
+    private Integer userId;
+
+    /**
+     * 课程id
+     */
+    private Integer courseId;
+
+    /**
+     * 质量评分
+     */
+    private Integer scoreQuality;
+
+    /**
+     * 环境评分
+     */
+    private Integer scoreSurroundings;
+
+    /**
+     * 人气评分
+     */
+    private Integer scorePopularity;
+
+    /**
+     * 课程所属商铺id
+     */
+    private Integer schoolId;
+
+    /**
+     * 综合评分
+     */
+    private Integer scoreAverage;
+
+    /**
+     * 评论
+     */
+    private String comment;
+
+    /**
+     * 评论图片
+     */
+    private String commentimg;
+
+    /**
+     * 距离排序
+     */
+    private Integer scoreDistance;
+
+    private Integer scorePrice;
+
+    public Integer getId() {
+        return id;
+    }
+
+    public void setId(Integer id) {
+        this.id = id;
+    }
+
+    public Integer getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Integer userId) {
+        this.userId = userId;
+    }
+
+    public Integer getCourseId() {
+        return courseId;
+    }
+
+    public void setCourseId(Integer courseId) {
+        this.courseId = courseId;
+    }
+
+    public Integer getScoreQuality() {
+        return scoreQuality;
+    }
+
+    public void setScoreQuality(Integer scoreQuality) {
+        this.scoreQuality = scoreQuality;
+    }
+
+    public Integer getScoreSurroundings() {
+        return scoreSurroundings;
+    }
+
+    public void setScoreSurroundings(Integer scoreSurroundings) {
+        this.scoreSurroundings = scoreSurroundings;
+    }
+
+    public Integer getScorePopularity() {
+        return scorePopularity;
+    }
+
+    public void setScorePopularity(Integer scorePopularity) {
+        this.scorePopularity = scorePopularity;
+    }
+
+    public Integer getSchoolId() {
+        return schoolId;
+    }
+
+    public void setSchoolId(Integer schoolId) {
+        this.schoolId = schoolId;
+    }
+
+    public Integer getScoreAverage() {
+        return scoreAverage;
+    }
+
+    public void setScoreAverage(Integer scoreAverage) {
+        this.scoreAverage = scoreAverage;
+    }
+
+    public String getComment() {
+        return comment;
+    }
+
+    public void setComment(String comment) {
+        this.comment = comment;
+    }
+
+    public String getCommentimg() {
+        return commentimg;
+    }
+
+    public void setCommentimg(String commentimg) {
+        this.commentimg = commentimg;
+    }
+
+    public Integer getScoreDistance() {
+        return scoreDistance;
+    }
+
+    public void setScoreDistance(Integer scoreDistance) {
+        this.scoreDistance = scoreDistance;
+    }
+
+    public Integer getScorePrice() {
+        return scorePrice;
+    }
+
+    public void setScorePrice(Integer scorePrice) {
+        this.scorePrice = scorePrice;
+    }
+}

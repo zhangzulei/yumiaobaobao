@@ -1,0 +1,91 @@
+package com.yumiaobaobao.app.taiking.dao;
+
+import com.yumiaobaobao.app.shop.entity.Schoolshop;
+import com.yumiaobaobao.app.taiking.entity.TaiKing;
+import com.yumiaobaobao.app.user.entity.UserInfo;
+import org.apache.ibatis.annotations.Insert;
+import org.apache.ibatis.annotations.Param;
+import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
+import org.springframework.stereotype.Repository;
+
+import java.util.List;
+import java.util.Map;
+
+/**
+ * Created by WH on 2019/04/10.
+ */
+@Repository
+public interface TaiKingMapper {
+
+    /**
+     * 可能感兴趣的专题
+     * @param userid
+     * @return
+     */
+    @Select("SELECT * FROM talking WHERE talkingid NOT IN (SELECT talkingid FROM talking_user WHERE userid=#{userid}) ORDER BY RAND() limit 10")
+    List<TaiKing> maytalking(@Param("userid") int userid);
+
+    /**
+     * 发布新专题
+     * @param map
+     * @return
+     */
+    @Insert("INSERT INTO talking(talkingtitle,talkingnote,talkingDatetime) VALUES(#{map.TalKingTitle},#{map.TalKingNote},#{map.talkingDatetime})")
+    int addtalking(@Param("map") Map<String, Object> map);
+
+    /***
+     * 按热度查询所有专题
+     * @return
+     */
+    @Select("SELECT * FROM talking ORDER BY talking.talkingnumber DESC ")
+    List<TaiKing> selectHoeTalking();
+    /***
+     * 按最新查询所有专题
+     * @return
+     */
+    @Select("SELECT * FROM talking ORDER BY talking.talkingDatetime DESC ")
+    List<TaiKing> selectNewTalking();
+
+    /***
+     * 根据专题id查询专题信息
+     * @return
+     */
+    List<TaiKing> bytalkingidselectTalking(@Param("list") List List);
+
+    /**
+     * 根据用户id查询该用户关注的专题id
+     * @return
+     */
+    @Select("SELECT * FROM talking_user  WHERE talking_user.userid=#{userid}")
+    List<TaiKing> byUseridSelecttalkingid(@Param("userid") String userid);
+
+    /**
+     * 根据专题id查询关注该专题的用户id
+     * @return
+     */
+    @Select("SELECT * FROM talking_user  WHERE talking_user.talkingid=#{talkingid}")
+    List<UserInfo> bytalkingidSelectUserid(@Param("talkingid") String talkingid);
+
+    //根据id查询talking信息
+    @Select("select * from talking where talkingid = #{talkingId}")
+    List<TaiKing> selectById(@Param("talkingId")String talkingId);
+
+    //推荐专题显示（三个）
+    @Select("SELECT * FROM talking ORDER BY RAND() limit 3")
+    List<TaiKing> recommendtalking();
+
+    //根据相关专题推荐商户
+    @Select("SELECT * FROM school_shop ORDER BY RAND() limit 10")
+    List<Schoolshop> recommendShop();
+
+    //查询所有专题内容
+    @Select("select * from talking")
+    List<TaiKing> allTalking();
+
+    //更新专题信息
+    @Update("update talking set talkingurl = #{talkingurl},talkingtitle = #{talkingtitle},talkingnote = #{talkingnote}," +
+            "talkingnumber = #{talkingnumber},talkingLook = #{talkingLook},talkingtouch = #{talkingtouch}," +
+            "taikingImg = #{taikingImg} where talkingid = #{talkingid} ")
+    int updateTalking(@Param("talking")TaiKing talking);
+}
